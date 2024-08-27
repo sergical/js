@@ -13,7 +13,6 @@ import { getDashboardChainRpc } from "lib/rpc";
 import { getThirdwebSDK, replaceIpfsUrl } from "lib/sdk";
 import { RocketIcon, ShieldCheckIcon } from "lucide-react";
 import Link from "next/link";
-import { useMemo } from "react";
 import { polygon } from "thirdweb/chains";
 import invariant from "tiny-invariant";
 import { ContractPublisher, replaceDeployerAddress } from "../publisher";
@@ -27,6 +26,52 @@ interface ContractCardProps {
     itemIndex: `${number}`;
   };
   isBeta: boolean | undefined;
+  // for modular contracts to show the modules in the card
+  // publisher and moduleId are required
+  // version is optional
+  // if version is not provided, it will default to "latest"
+  modules?: {
+    publisher: string;
+    moduleId: string;
+    version?: string;
+  }[];
+}
+
+function getContractUrl(
+  {
+    version,
+    publisher,
+    contractId,
+    modules = [],
+  }: {
+    publisher: string;
+    contractId: string;
+    version?: string;
+    modules?: {
+      publisher: string;
+      moduleId: string;
+      version?: string;
+    }[];
+  },
+  isDeploy?: true,
+) {
+  let pathName = "";
+  if (version !== "latest") {
+    pathName = `/${publisher}/${contractId}/${version}`;
+  } else {
+    pathName = `/${publisher}/${contractId}`;
+  }
+  if (isDeploy) {
+    pathName += "/deploy";
+  }
+  const moudleUrl = new URLSearchParams();
+
+  for (const m of modules) {
+    moudleUrl.append("module", btoa(JSON.stringify(m)));
+  }
+
+  pathName += `?${moudleUrl.toString()}`;
+  return replaceDeployerAddress(pathName);
 }
 
 export const ContractCard: React.FC<ContractCardProps> = ({
@@ -34,29 +79,14 @@ export const ContractCard: React.FC<ContractCardProps> = ({
   contractId,
   version = "latest",
   tracking,
+  modules = [],
   isBeta,
 }) => {
   const publishedContractResult = usePublishedContract(
     `${publisher}/${contractId}/${version}`,
   );
 
-  const isNewContract = useMemo(() => {
-    const newContracts = ["thirdweb.eth/AccountFactory"];
-    return newContracts.includes(`${publisher}/${contractId}`);
-  }, [publisher, contractId]);
-
   const showSkeleton = publishedContractResult.isLoading;
-
-  const href = useMemo(() => {
-    let h: string;
-    if (version !== "latest") {
-      h = `/${publisher}/${contractId}/${version}`;
-    } else {
-      h = `/${publisher}/${contractId}`;
-    }
-
-    return replaceDeployerAddress(h);
-  }, [contractId, publisher, version]);
 
   return (
     <article
@@ -67,7 +97,12 @@ export const ContractCard: React.FC<ContractCardProps> = ({
     >
       <TrackedLinkTW
         className="absolute inset-0 z-0 cursor-pointer"
-        href={href}
+        href={getContractUrl({
+          publisher,
+          contractId,
+          version,
+          modules,
+        })}
         category="contract_card"
         label={contractId}
         trackingProps={{
@@ -115,8 +150,6 @@ export const ContractCard: React.FC<ContractCardProps> = ({
           <Badge className="border-[#a21caf] dark:border-[#86198f] text-white  dark:bg-[linear-gradient(154deg,#4a044e,#2e1065)] bg-[linear-gradient(154deg,#d946ef,#9333ea)] py-[3px] px-[8px]">
             Beta
           </Badge>
-        ) : isNewContract ? (
-          <Badge variant="outline">New</Badge>
         ) : null}
       </div>
 
@@ -149,8 +182,24 @@ export const ContractCard: React.FC<ContractCardProps> = ({
           <Skeleton className="h-4 w-[60%]" />
         </div>
       )}
-
-      <div className="mt-auto pt-3 relative z-1 flex gap-2 justify-between">
+      {modules.length ? (
+        <div className="mt-auto pt-3 flex flex-row gap-1 flex-wrap">
+          {modules.slice(0, 2).map((m) => (
+            <Badge variant="outline" key={m.publisher + m.moduleId + m.version}>
+              {m.moduleId.split("ERC")[0]}
+            </Badge>
+          ))}
+          {modules.length > 2 ? (
+            <Badge variant="outline">+{modules.length - 2}</Badge>
+          ) : null}
+        </div>
+      ) : null}
+      <div
+        className={cn(
+          "pt-3 relative z-1 flex gap-2 justify-between",
+          !modules?.length && "mt-auto",
+        )}
+      >
         <ContractPublisher
           addressOrEns={publishedContractResult.data?.publisher}
           showSkeleton={showSkeleton}
@@ -163,7 +212,17 @@ export const ContractCard: React.FC<ContractCardProps> = ({
             className="gap-1.5 py-1.5 px-2.5 text-xs h-auto relative z-10"
             asChild
           >
-            <Link href={`${href}/deploy`}>
+            <Link
+              href={getContractUrl(
+                {
+                  publisher,
+                  contractId,
+                  version,
+                  modules,
+                },
+                true,
+              )}
+            >
               <RocketIcon className="size-3" />
               Deploy
             </Link>

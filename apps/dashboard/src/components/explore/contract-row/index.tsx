@@ -48,10 +48,19 @@ export const ContractRow: React.FC<ContractRowProps> = ({ category }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 z-0 relative">
         {category.contracts.slice(0, 6).map((publishedContractId, idx) => {
-          const [publisher, contractId] = publishedContractId.split("/");
+          const publisher: string = Array.isArray(publishedContractId)
+            ? publishedContractId[0].split("/")[0]
+            : publishedContractId.split("/")[0];
+          const contractId: string = Array.isArray(publishedContractId)
+            ? publishedContractId[0].split("/")[1]
+            : publishedContractId.split("/")[1];
+          const modules = Array.isArray(publishedContractId)
+            ? publishedContractId[1]
+            : undefined;
+
           return (
             <ContractCard
-              key={publishedContractId}
+              key={publisher + contractId}
               publisher={publisher}
               contractId={contractId}
               tracking={{
@@ -59,6 +68,14 @@ export const ContractRow: React.FC<ContractRowProps> = ({ category }) => {
                 itemIndex: `${idx}`,
               }}
               isBeta={category.isBeta}
+              modules={
+                modules?.length
+                  ? modules.map((m) => ({
+                      publisher: m.split("/")[0],
+                      moduleId: m.split("/")[1],
+                    }))
+                  : undefined
+              }
             />
           );
         })}

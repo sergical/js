@@ -23,7 +23,6 @@ import type {
   InferGetStaticPropsType,
 } from "next";
 import { NextSeo } from "next-seo";
-// import dynamic from "next/dynamic";
 import { PageId } from "page-id";
 import { FiChevronLeft } from "react-icons/fi";
 import { Heading, Link, Text } from "tw-components";
@@ -93,10 +92,18 @@ const ExploreCategoryPage: ThirdwebNextPage = (
         </Flex>
         <SimpleGrid columns={{ base: 1, md: 3 }} gap={5}>
           {props.category.contracts.map((publishedContractId, idx) => {
-            const [publisher, contractId] = publishedContractId.split("/");
+            const publisher: string = Array.isArray(publishedContractId)
+              ? publishedContractId[0].split("/")[0]
+              : publishedContractId.split("/")[0];
+            const contractId: string = Array.isArray(publishedContractId)
+              ? publishedContractId[0].split("/")[1]
+              : publishedContractId.split("/")[1];
+            const modules = Array.isArray(publishedContractId)
+              ? publishedContractId[1]
+              : undefined;
             return (
               <ContractCard
-                key={publishedContractId}
+                key={publisher + contractId}
                 publisher={publisher}
                 contractId={contractId}
                 tracking={{
@@ -104,6 +111,14 @@ const ExploreCategoryPage: ThirdwebNextPage = (
                   itemIndex: `${idx}`,
                 }}
                 isBeta={props.category.isBeta}
+                modules={
+                  modules?.length
+                    ? modules.map((m) => ({
+                        publisher: m.split("/")[0],
+                        moduleId: m.split("/")[1],
+                      }))
+                    : undefined
+                }
               />
             );
           })}

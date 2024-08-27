@@ -23,14 +23,18 @@ import { useTxNotifications } from "hooks/useTxNotifications";
 import { replaceTemplateValues } from "lib/deployment/template-values";
 import { ExternalLinkIcon, InfoIcon } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { FormProvider, type UseFormReturn, useForm } from "react-hook-form";
 import { FiHelpCircle } from "react-icons/fi";
+import { computePublishedContractAddress } from "thirdweb/deploys";
 import { useActiveAccount } from "thirdweb/react";
 import { encodeAbiParameters } from "thirdweb/utils";
 import invariant from "tiny-invariant";
 import { FormHelperText, FormLabel, Heading, Text } from "tw-components";
+import { thirdwebClient } from "../../../@/constants/client";
+import { useV5DashboardChain } from "../../../lib/v5-adapter";
 import {
   useConstructorParamsFromABI,
   useContractEnabledExtensions,
@@ -120,6 +124,8 @@ const CustomContractForm: React.FC<CustomContractFormProps> = ({
   const connectedWallet = ensQuery.data?.address || walletAddress;
   const trackEvent = useTrack();
   const activeAccount = useActiveAccount();
+  const searchParams = useSearchParams();
+  const chain = useV5DashboardChain(selectedChain);
 
   const compilerMetadata = useContractPublishMetadataFromURI(ipfsHash);
   const fullPublishMetadata = useContractFullPublishMetadata(ipfsHash);
@@ -160,7 +166,14 @@ const CustomContractForm: React.FC<CustomContractFormProps> = ({
     fullPublishMetadata.data?.deployType === "customFactory";
 
   const isModular = fullPublishMetadata.data?.routerType === "modular";
-  const defaultModules = fullPublishMetadata.data?.defaultModules;
+
+  const defaultModules = (searchParams?.getAll("module") || [])
+    .map((m) => JSON.parse(atob(m)))
+    .map((m) => ({
+      publisherAddress: m.publisher,
+      moduleName: m.moduleId,
+      moduleVersion: m.version || "latest",
+    }));
 
   const modularContractDefaultModulesInstallParams =
     useModularContractsDefaultModulesInstallParams({
@@ -394,7 +407,7 @@ const CustomContractForm: React.FC<CustomContractFormProps> = ({
         id="custom-contract-form"
         as="form"
         onSubmit={form.handleSubmit(async (formData) => {
-          if (!selectedChain) {
+          if (!selectedChain || !chain) {
             return;
           }
           const deployData = {
@@ -435,7 +448,20 @@ const CustomContractForm: React.FC<CustomContractFormProps> = ({
                 },
               );
 
+            const moduleInstallationAddresses: string[] = await Promise.all(
+              modularContractDefaultModulesInstallParams.data.map((d) =>
+                computePublishedContractAddress({
+                  chain,
+                  client: thirdwebClient,
+                  contractId: d.moduleName,
+                  // modules never have consturctor params so this is fine!
+                  constructorParams: [],
+                }),
+              ),
+            );
+
             deployParams._moduleInstallData = JSON.stringify(moduleInstallData);
+            deployParams._modules = JSON.stringify(moduleInstallationAddresses);
           }
 
           deploy.mutate(

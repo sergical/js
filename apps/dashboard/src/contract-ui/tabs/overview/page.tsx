@@ -83,7 +83,7 @@ export const ContractOverviewPage: React.FC<ContractOverviewPageProps> = ({
         <BuildYourApp trackingCategory={TRACKING_CATEGORY} />
       </GridItem>
       <GridItem colSpan={{ xl: 3 }} as={Flex} direction="column" gap={6}>
-        <PublishedBy contractAddress={contract.address} />
+        <PublishedBy contract={contract} />
         {contract?.abi && <Extensions abi={contract?.abi} />}
         {(guides.length > 0 || templates.length > 0) && <Divider />}
         <RelevantDataSection
