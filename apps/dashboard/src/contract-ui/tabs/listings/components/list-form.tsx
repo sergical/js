@@ -215,7 +215,6 @@ export const CreateListingsForm: React.FC<CreateListingsFormProps> = ({
             try {
               await sendAndConfirmTx.mutateAsync(approveTx);
             } catch {
-              setIsFormLoading(false);
               return toast.error("Failed to approve NFT for marketplace");
             }
           }
