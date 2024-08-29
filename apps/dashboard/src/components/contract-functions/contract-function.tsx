@@ -456,13 +456,20 @@ const FunctionsOrEventsListItem: React.FC<FunctionsOrEventsListItemProps> = ({
         }
         onClick={() => {
           setSelectedFunction(fn);
-          const { name } = fn;
           const path = router.asPath.split("?")[0];
           // Only apply to the Explorer page
           if (path.endsWith("/explorer")) {
-            router.push({ pathname: path, query: { name } }, undefined, {
-              shallow: true,
-            });
+            const { name } = fn;
+            /**
+             * Using function name is incorrect because we have function overloads in solidity
+             * using router shallow pushing in this context will actually re-render the page
+             * and cause the functions with same name to render incorrectly.
+             *
+             * todo: fully migrate this page to v5 and switch to use function's signature instead of name
+             */
+            const url = new URL(window.location.href);
+            url.searchParams.set("name", name);
+            window.history.pushState(null, "", url.toString());
           }
         }}
         color="heading"
