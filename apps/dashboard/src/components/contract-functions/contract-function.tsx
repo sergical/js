@@ -286,8 +286,16 @@ export const ContractFunctionsPanel: React.FC<ContractFunctionsPanelProps> = ({
 
   // Load state from the URL
   const router = useRouter();
-  const _itemName = router.query.name;
-  const _item = fnsOrEvents.find((o) => o.name === _itemName);
+  const _item = fnsOrEvents.find((o) => {
+    const name = router.query.name;
+    const inputs = router.query.input;
+    if (inputs) {
+      return (
+        o.name === name && o.inputs.map((i) => i.name).join(",") === inputs
+      );
+    }
+    return o.name === name;
+  });
   const [selectedFunction, setSelectedFunction] = useState<
     AbiFunction | AbiEvent
   >(_item ?? fnsOrEvents[0]);
@@ -334,6 +342,7 @@ export const ContractFunctionsPanel: React.FC<ContractFunctionsPanelProps> = ({
           isFunction={isFunction}
           selectedFunction={selectedFunction}
           setSelectedFunction={setSelectedFunction}
+          allFunctions={e.functions}
         />
       ))}
     </Flex>
@@ -423,6 +432,7 @@ interface FunctionsOrEventsListItemProps {
   isFunction: boolean;
   selectedFunction: AbiFunction | AbiEvent;
   setSelectedFunction: Dispatch<SetStateAction<AbiFunction | AbiEvent>>;
+  allFunctions?: AbiFunction[];
 }
 
 const FunctionsOrEventsListItem: React.FC<FunctionsOrEventsListItemProps> = ({
@@ -430,6 +440,7 @@ const FunctionsOrEventsListItem: React.FC<FunctionsOrEventsListItemProps> = ({
   isFunction,
   selectedFunction,
   setSelectedFunction,
+  allFunctions,
 }) => {
   const router = useRouter();
   return (
@@ -459,16 +470,20 @@ const FunctionsOrEventsListItem: React.FC<FunctionsOrEventsListItemProps> = ({
           const path = router.asPath.split("?")[0];
           // Only apply to the Explorer page
           if (path.endsWith("/explorer")) {
-            const { name } = fn;
-            /**
-             * Using function name is incorrect because we have function overloads in solidity
-             * using router shallow pushing in this context will actually re-render the page
-             * and cause the functions with same name to render incorrectly.
-             *
-             * todo: fully migrate this page to v5 and switch to use function's signature instead of name
-             */
+            // Check if there are more than 1 function with the same name
+            const isOverloadFn =
+              (allFunctions || []).filter((o) => o.name === fn.name).length > 1;
             const url = new URL(window.location.href);
-            url.searchParams.set("name", name);
+            url.searchParams.set("name", fn.name);
+            // In case there are more than 1 fn with the same name, distinguish them by their inputs
+            if (isOverloadFn) {
+              url.searchParams.set(
+                "inputs",
+                fn.inputs.map((i) => i.name).join(","),
+              );
+            } else {
+              url.searchParams.delete("inputs");
+            }
             window.history.pushState(null, "", url.toString());
           }
         }}
