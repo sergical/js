@@ -20,7 +20,12 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
-import type { Abi, AbiEvent, AbiFunction } from "abitype";
+import {
+  formatAbiItem,
+  type Abi,
+  type AbiEvent,
+  type AbiFunction,
+} from "abitype";
 import { useContractEnabledExtensions } from "components/contract-components/hooks";
 import { camelToTitle } from "contract-ui/components/solidity-inputs/helpers";
 import { useRouter } from "next/router";
@@ -327,14 +332,12 @@ export const ContractFunctionsPanel: React.FC<ContractFunctionsPanelProps> = ({
   // Load state from the URL
   const router = useRouter();
   const _item = fnsOrEvents.find((o) => {
-    const name = router.query.name;
-    const inputs = router.query.input;
-    if (inputs) {
-      return (
-        o.name === name && o.inputs.map((i) => i.name).join(",") === inputs
-      );
+    const _signature = router.query.signature;
+    if (!_signature) {
+      return null;
     }
-    return o.name === name;
+    const signature = formatAbiItem(o);
+    return signature === _signature;
   });
   const [selectedFunction, setSelectedFunction] = useState<
     AbiFunction | AbiEvent
@@ -381,7 +384,6 @@ export const ContractFunctionsPanel: React.FC<ContractFunctionsPanelProps> = ({
           fn={fn}
           selectedFunction={selectedFunction}
           setSelectedFunction={setSelectedFunction}
-          allFunctions={e.functions}
         />
       ))}
     </Flex>
@@ -469,15 +471,12 @@ interface FunctionsOrEventsListItemProps {
   fn: AbiFunction | AbiEvent;
   selectedFunction: AbiFunction | AbiEvent;
   setSelectedFunction: Dispatch<SetStateAction<AbiFunction | AbiEvent>>;
-  allFunctions?: AbiFunction[];
 }
 
 const FunctionsOrEventsListItem: React.FC<FunctionsOrEventsListItemProps> = ({
   fn,
-
   selectedFunction,
   setSelectedFunction,
-  allFunctions,
 }) => {
   const isActive =
     selectedFunction?.name === fn.name &&
@@ -494,21 +493,10 @@ const FunctionsOrEventsListItem: React.FC<FunctionsOrEventsListItemProps> = ({
           const path = router.asPath.split("?")[0];
           // Only apply to the Explorer page
           if (path.endsWith("/explorer")) {
-            // Check if there are more than 1 function with the same name
-            const isOverloadFn =
-              (allFunctions || []).filter((o) => o.name === fn.name).length > 1;
-            const url = new URL(window.location.href);
-            url.searchParams.set("name", fn.name);
-            // In case there are more than 1 fn with the same name, distinguish them by their inputs
-            if (isOverloadFn) {
-              url.searchParams.set(
-                "inputs",
-                fn.inputs.map((i) => i.name).join(","),
-              );
-            } else {
-              url.searchParams.delete("inputs");
-            }
-            window.history.pushState(null, "", url.toString());
+            const signature = formatAbiItem(fn);
+            router.push({ pathname: path, query: { signature } }, undefined, {
+              shallow: true,
+            });
           }
         }}
         color="heading"
