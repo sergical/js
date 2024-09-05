@@ -21,10 +21,10 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import {
-  formatAbiItem,
   type Abi,
   type AbiEvent,
   type AbiFunction,
+  formatAbiItem,
 } from "abitype";
 import { useContractEnabledExtensions } from "components/contract-components/hooks";
 import { camelToTitle } from "contract-ui/components/solidity-inputs/helpers";
