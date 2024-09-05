@@ -7,40 +7,53 @@ import { useCallback, useRef, useState } from "react";
 import { ScrollShadow } from "./ScrollShadow/ScrollShadow";
 import { Button } from "./button";
 
+export type TabLink = {
+  name: string;
+  href: string;
+  isActive: boolean;
+  isDisabled?: boolean;
+};
+
 export function TabLinks(props: {
-  links: {
-    name: string;
-    href: string;
-    isActive: boolean;
-    isEnabled?: boolean;
-  }[];
+  links: TabLink[];
+  className?: string;
+  tabContainerClassName?: string;
+  shadowColor?: string;
 }) {
   const { containerRef, lineRef, activeTabRef } =
     useUnderline<HTMLAnchorElement>();
 
   return (
-    <div className="relative">
-      <ScrollShadow scrollableClassName="pb-[8px] relative">
-        <div className="flex" ref={containerRef}>
+    <div className={cn("relative", props.className)}>
+      {/* Bottom line */}
+      <div className="h-[1px] bg-border absolute bottom-0 left-0 right-0" />
+
+      <ScrollShadow
+        scrollableClassName="pb-[8px] relative"
+        shadowColor={props.shadowColor}
+      >
+        <div
+          className={cn("flex", props.tabContainerClassName)}
+          ref={containerRef}
+        >
           {props.links.map((tab) => {
             return (
               <Button
                 asChild
                 key={tab.name}
-                disabled={!tab.isEnabled}
+                disabled={tab.isDisabled}
                 variant="ghost"
               >
                 <Link
                   data-active={tab.isActive}
                   ref={tab.isActive ? activeTabRef : undefined}
                   href={tab.href}
-                  aria-disabled={!tab.isEnabled}
+                  aria-disabled={tab.isDisabled}
                   className={cn(
-                    "rounded-lg hover:bg-muted px-3 font-medium text-sm lg:text-base relative h-auto",
-                    !tab.isActive &&
-                      tab.isEnabled &&
-                      "opacity-50 hover:opacity-100",
-                    !tab.isEnabled && "opacity-50 pointer-events-none",
+                    "rounded-lg hover:bg-muted px-3 font-normal text-sm lg:text-sm relative h-auto text-muted-foreground",
+                    !tab.isActive && !tab.isDisabled && "hover:text-foreground",
+                    tab.isDisabled && "pointer-events-none",
+                    tab.isActive && "!text-foreground",
                   )}
                 >
                   {tab.name}
@@ -56,8 +69,6 @@ export function TabLinks(props: {
           className="absolute left-0 bottom-0 h-[2px] bg-foreground rounded-lg fade-in-0 animate-in"
         />
       </ScrollShadow>
-      {/* Bottom line */}
-      <div className="h-[1px] bg-border -translate-y-[2px]" />
     </div>
   );
 }
@@ -74,13 +85,20 @@ export function TabButtons(props: {
   activeTabClassName?: string;
   tabContainerClassName?: string;
   containerClassName?: string;
+  shadowColor?: string;
 }) {
   const { containerRef, lineRef, activeTabRef } =
     useUnderline<HTMLButtonElement>();
 
   return (
     <div className={cn("relative", props.containerClassName)}>
-      <ScrollShadow scrollableClassName="pb-[8px] relative">
+      {/* Bottom line */}
+      <div className="h-[1px] bg-border absolute bottom-0 left-0 right-0" />
+
+      <ScrollShadow
+        scrollableClassName="pb-[8px] relative"
+        shadowColor={props.shadowColor}
+      >
         <div
           className={cn("flex", props.tabContainerClassName)}
           ref={containerRef}
@@ -114,8 +132,6 @@ export function TabButtons(props: {
           className="absolute left-0 bottom-0 h-[2px] bg-foreground rounded-lg fade-in-0 animate-in"
         />
       </ScrollShadow>
-      {/* Bottom line */}
-      <div className="h-[1px] bg-border -translate-y-[2px]" />
     </div>
   );
 }
@@ -130,24 +146,33 @@ function useUnderline<El extends HTMLElement>() {
   }, []);
 
   useIsomorphicLayoutEffect(() => {
-    if (activeTabEl && containerRef.current && lineRef.current) {
-      const containerRect = containerRef.current.getBoundingClientRect();
-      const lineEl = lineRef.current;
-      const rect = activeTabEl.getBoundingClientRect();
-      lineEl.style.width = `${rect.width}px`;
-      lineEl.style.transform = `translateX(${
-        rect.left - containerRect.left
-      }px)`;
-      setTimeout(() => {
-        lineEl.style.transition = "transform 0.3s, width 0.3s";
-      }, 0);
+    function update() {
+      if (activeTabEl && containerRef.current && lineRef.current) {
+        const containerRect = containerRef.current.getBoundingClientRect();
+        const lineEl = lineRef.current;
+        const rect = activeTabEl.getBoundingClientRect();
+        lineEl.style.width = `${rect.width}px`;
+        lineEl.style.transform = `translateX(${
+          rect.left - containerRect.left
+        }px)`;
+        setTimeout(() => {
+          lineEl.style.transition = "transform 0.3s, width 0.3s";
+        }, 0);
 
-      activeTabEl.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-        inline: "center",
-      });
+        activeTabEl.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "center",
+        });
+      }
     }
+
+    update();
+    // add event listener for resize
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("resize", update);
+    };
   }, [activeTabEl]);
 
   return { containerRef, lineRef, activeTabRef };

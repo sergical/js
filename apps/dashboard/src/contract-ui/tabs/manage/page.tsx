@@ -5,7 +5,7 @@ import { useEVMContractInfo } from "@3rdweb-sdk/react";
 import { UserXIcon } from "lucide-react";
 import { useMemo } from "react";
 import { getContract } from "thirdweb";
-import { getInstalledModules, owner } from "thirdweb/extensions/modular";
+import { getInstalledModules, owner } from "thirdweb/modules";
 import { useActiveAccount, useReadContract } from "thirdweb/react";
 import { useV5DashboardChain } from "../../../lib/v5-adapter";
 import { InstalledModulesTable } from "./components/InstalledModulesTable";
@@ -94,7 +94,7 @@ function Content(props: { contractAddress: string; chainId: number }) {
             <h2 className="text-2xl tracking-tight font-bold mb-1">
               Edit Modules
             </h2>
-            <p className="text-secondary-foreground">
+            <p className="text-muted-foreground">
               Add capabilities to your contract by installing modules
             </p>
           </div>

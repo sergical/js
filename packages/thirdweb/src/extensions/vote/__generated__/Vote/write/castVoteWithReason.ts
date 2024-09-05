@@ -6,7 +6,6 @@ import type {
 import { prepareContractCall } from "../../../../../transaction/prepare-contract-call.js";
 import { encodeAbiParameters } from "../../../../../utils/abi/encodeAbiParameters.js";
 import { once } from "../../../../../utils/promise/once.js";
-import type { ThirdwebContract } from "../../../../../contract/contract.js";
 import { detectMethod } from "../../../../../utils/bytecode/detectExtension.js";
 
 /**
@@ -44,21 +43,19 @@ const FN_OUTPUTS = [
 
 /**
  * Checks if the `castVoteWithReason` method is supported by the given contract.
- * @param contract The ThirdwebContract.
- * @returns A promise that resolves to a boolean indicating if the `castVoteWithReason` method is supported.
+ * @param availableSelectors An array of 4byte function selectors of the contract. You can get this in various ways, such as using "whatsabi" or if you have the ABI of the contract available you can use it to generate the selectors.
+ * @returns A boolean indicating if the `castVoteWithReason` method is supported.
  * @extension VOTE
  * @example
  * ```ts
  * import { isCastVoteWithReasonSupported } from "thirdweb/extensions/vote";
  *
- * const supported = await isCastVoteWithReasonSupported(contract);
+ * const supported = isCastVoteWithReasonSupported(["0x..."]);
  * ```
  */
-export async function isCastVoteWithReasonSupported(
-  contract: ThirdwebContract<any>,
-) {
+export function isCastVoteWithReasonSupported(availableSelectors: string[]) {
   return detectMethod({
-    contract,
+    availableSelectors,
     method: [FN_SELECTOR, FN_INPUTS, FN_OUTPUTS] as const,
   });
 }
@@ -70,7 +67,7 @@ export async function isCastVoteWithReasonSupported(
  * @extension VOTE
  * @example
  * ```ts
- * import { encodeCastVoteWithReasonParams } "thirdweb/extensions/vote";
+ * import { encodeCastVoteWithReasonParams } from "thirdweb/extensions/vote";
  * const result = encodeCastVoteWithReasonParams({
  *  proposalId: ...,
  *  support: ...,
@@ -95,7 +92,7 @@ export function encodeCastVoteWithReasonParams(
  * @extension VOTE
  * @example
  * ```ts
- * import { encodeCastVoteWithReason } "thirdweb/extensions/vote";
+ * import { encodeCastVoteWithReason } from "thirdweb/extensions/vote";
  * const result = encodeCastVoteWithReason({
  *  proposalId: ...,
  *  support: ...,
@@ -119,6 +116,7 @@ export function encodeCastVoteWithReason(options: CastVoteWithReasonParams) {
  * @extension VOTE
  * @example
  * ```ts
+ * import { sendTransaction } from "thirdweb";
  * import { castVoteWithReason } from "thirdweb/extensions/vote";
  *
  * const transaction = castVoteWithReason({
@@ -132,8 +130,7 @@ export function encodeCastVoteWithReason(options: CastVoteWithReasonParams) {
  * });
  *
  * // Send the transaction
- * ...
- *
+ * await sendTransaction({ transaction, account });
  * ```
  */
 export function castVoteWithReason(

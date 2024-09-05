@@ -1,3 +1,15 @@
+import { CopyAddressButton } from "@/components/ui/CopyAddressButton";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   type useAllContractList,
   useRemoveContractMutation,
@@ -12,12 +24,6 @@ import {
   MenuButton,
   MenuList,
   Spinner,
-  Table,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
   useDisclosure,
 } from "@chakra-ui/react";
 import { GettingStartedBox } from "components/getting-started/box";
@@ -28,15 +34,11 @@ import type { BasicContract } from "contract-ui/types/types";
 import { useAllChainsData } from "hooks/chains/allChains";
 import { useChainSlug } from "hooks/chains/chainSlug";
 import { useSupportedChainsRecord } from "hooks/chains/configureChains";
+import { DownloadIcon, PlusIcon } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { memo, useEffect, useMemo, useState } from "react";
-import {
-  FiArrowRight,
-  FiFilePlus,
-  FiMoreVertical,
-  FiPlus,
-  FiX,
-} from "react-icons/fi";
+import { FiArrowRight, FiMoreVertical, FiX } from "react-icons/fi";
 import {
   type Column,
   type ColumnInstance,
@@ -45,19 +47,7 @@ import {
   usePagination,
   useTable,
 } from "react-table";
-import {
-  Badge,
-  Button,
-  CodeBlock,
-  Heading,
-  LinkButton,
-  MenuItem,
-  Text,
-  TrackedIconButton,
-} from "tw-components";
-import { AddressCopyButton } from "tw-components/AddressCopyButton";
-import { TableContainer } from "tw-components/table-container";
-import type { ComponentWithChildren } from "types/component-with-children";
+import { CodeBlock, MenuItem, Text, TrackedIconButton } from "tw-components";
 import { ImportModal } from "../import-contract/modal";
 import { AsyncContractNameCell, AsyncContractTypeCell } from "./cells";
 import { ShowMoreButton } from "./show-more-button";
@@ -102,27 +92,29 @@ export const DeployedContracts: React.FC<DeployedContractsProps> = ({
             py={{ base: 4, md: 8 }}
           >
             <Flex gap={2} direction="column">
-              <Heading size="title.md">Your contracts</Heading>
-              <Text fontStyle="italic" maxW="container.md">
+              <h1 className="text-3xl font-semibold tracking-tight">
+                Your contracts
+              </h1>
+              <p className="text-muted-foreground text-sm">
                 The list of contract instances that you have deployed or
-                imported with thirdweb across all networks.
-              </Text>
+                imported with thirdweb across all networks
+              </p>
             </Flex>
             <ButtonGroup>
               <Button
-                leftIcon={<FiFilePlus />}
+                className="gap-2"
                 variant="outline"
                 onClick={modalState.onOpen}
               >
+                <DownloadIcon className="size-4" />
                 Import contract
               </Button>
-              <LinkButton
-                leftIcon={<FiPlus />}
-                colorScheme="primary"
-                href="/explore"
-              >
-                Deploy contract
-              </LinkButton>
+              <Button asChild className="gap-2">
+                <Link href="/explore">
+                  <PlusIcon className="size-4" />
+                  Deploy contract
+                </Link>
+              </Button>
             </ButtonGroup>
           </Flex>
         </>
@@ -132,86 +124,79 @@ export const DeployedContracts: React.FC<DeployedContractsProps> = ({
         combinedList={contractListQuery.data}
         limit={limit}
         chainIdsWithDeployments={chainIdsWithDeployments}
-      >
-        {contractListQuery.isLoading && (
-          <Center>
-            <Flex py={4} direction="row" gap={4} align="center">
-              <Spinner size="sm" />
-              <Text>Loading contracts</Text>
-            </Flex>
-          </Center>
-        )}
-        {contractListQuery.data.length === 0 && contractListQuery.isFetched && (
-          <Center>
-            <Flex py={4} direction="column" gap={4} align="center">
-              {router.pathname === "/dashboard" ? (
-                <GettingStartedBox title="No contracts found, yet!">
-                  <GettingStartedCard
-                    title="Explore"
-                    description={
+        loading={contractListQuery.isLoading}
+      />
+
+      {contractListQuery.data.length === 0 && contractListQuery.isFetched && (
+        <Center>
+          <Flex py={4} direction="column" gap={4} align="center">
+            {router.pathname === "/dashboard" ? (
+              <GettingStartedBox title="No contracts found, yet!">
+                <GettingStartedCard
+                  title="Explore"
+                  description={
+                    <>
+                      Browse a large collection of ready-to-deploy contracts
+                      built by thirdweb and other contract developers. Find a
+                      contract for your app&apos; or game&apos;s use case.
+                    </>
+                  }
+                  icon={require("../../../../public/assets/product-icons/contracts.png")}
+                  linkProps={{
+                    category: "getting-started",
+                    label: "browse-contracts",
+                    href: "/explore",
+                    children: (
                       <>
-                        Browse a large collection of ready-to-deploy contracts
-                        built by thirdweb and other contract developers. Find a
-                        contract for your app&apos; or game&apos;s use case.
+                        Get Started <Icon as={FiArrowRight} />
                       </>
-                    }
-                    icon={require("../../../../public/assets/product-icons/contracts.png")}
-                    linkProps={{
-                      category: "getting-started",
-                      label: "browse-contracts",
-                      href: "/explore",
-                      children: (
-                        <>
-                          Get Started <Icon as={FiArrowRight} />
-                        </>
-                      ),
-                    }}
+                    ),
+                  }}
+                />
+                <GettingStartedCard
+                  title="Build your own"
+                  description={
+                    <>
+                      Get started with the <b>Solidity SDK</b> to create custom
+                      contracts specific to your use case.
+                    </>
+                  }
+                  icon={require("../../../../public/assets/product-icons/extensions.png")}
+                  linkProps={{
+                    category: "getting-started",
+                    label: "custom-contracts",
+                    href: "https://portal.thirdweb.com/contracts/build/overview",
+                    isExternal: true,
+                    children: (
+                      <>
+                        View Docs <Icon as={FiArrowRight} />
+                      </>
+                    ),
+                  }}
+                />
+                <GettingStartedCard
+                  title="Deploy from source"
+                  description={
+                    <>
+                      You are ready to deploy your contract with our interactive{" "}
+                      <b>CLI</b>.
+                    </>
+                  }
+                  icon={require("../../../../public/assets/product-icons/deploy.png")}
+                >
+                  <CodeBlock
+                    mt="auto"
+                    language="bash"
+                    code="npx thirdweb deploy"
                   />
-                  <GettingStartedCard
-                    title="Build your own"
-                    description={
-                      <>
-                        Get started with the <b>Solidity SDK</b> to create
-                        custom contracts specific to your use case.
-                      </>
-                    }
-                    icon={require("../../../../public/assets/product-icons/extensions.png")}
-                    linkProps={{
-                      category: "getting-started",
-                      label: "custom-contracts",
-                      href: "https://portal.thirdweb.com/contracts/build/overview",
-                      isExternal: true,
-                      children: (
-                        <>
-                          View Docs <Icon as={FiArrowRight} />
-                        </>
-                      ),
-                    }}
-                  />
-                  <GettingStartedCard
-                    title="Deploy from source"
-                    description={
-                      <>
-                        You are ready to deploy your contract with our
-                        interactive <b>CLI</b>.
-                      </>
-                    }
-                    icon={require("../../../../public/assets/product-icons/deploy.png")}
-                  >
-                    <CodeBlock
-                      mt="auto"
-                      language="bash"
-                      code="npx thirdweb deploy"
-                    />
-                  </GettingStartedCard>
-                </GettingStartedBox>
-              ) : (
-                <Text>No contracts found, yet!</Text>
-              )}
-            </Flex>
-          </Center>
-        )}
-      </ContractTable>
+                </GettingStartedCard>
+              </GettingStartedBox>
+            ) : (
+              <Text>No contracts found, yet!</Text>
+            )}
+          </Flex>
+        </Center>
+      )}
     </>
   );
 };
@@ -235,6 +220,7 @@ const RemoveFromDashboardButton: React.FC<RemoveFromDashboardButtonProps> = ({
       }}
       isDisabled={mutation.isLoading}
       closeOnSelect={false}
+      className="!bg-background hover:!bg-accent"
       icon={
         mutation.isLoading ? (
           <Spinner size="sm" />
@@ -277,14 +263,15 @@ interface ContractTableProps {
   isFetching?: boolean;
   limit: number;
   chainIdsWithDeployments: number[];
+  loading: boolean;
 }
 
-const ContractTable: ComponentWithChildren<ContractTableProps> = ({
+const ContractTable: React.FC<ContractTableProps> = ({
   combinedList,
-  children,
   isFetching,
   limit,
   chainIdsWithDeployments,
+  loading,
 }) => {
   const { chainIdToChainRecord } = useAllChainsData();
   const configuredChains = useSupportedChainsRecord();
@@ -326,15 +313,15 @@ const ContractTable: ComponentWithChildren<ContractTableProps> = ({
             data?.name?.replace("Mainnet", "").trim() ||
             `Unknown Network (#${cell.row.original.chainId})`;
           return (
-            <Flex align="center" gap={2}>
+            <div className="flex items-center gap-2">
               <ChainIcon size={24} ipfsSrc={data?.icon?.url} />
               <Text size="label.md">{cleanedChainName}</Text>
               {data?.testnet && (
-                <Badge colorScheme="gray" textTransform="capitalize">
+                <Badge variant="outline" className="text-muted-foreground">
                   Testnet
                 </Badge>
               )}
-            </Flex>
+            </div>
           );
         },
       },
@@ -343,7 +330,13 @@ const ContractTable: ComponentWithChildren<ContractTableProps> = ({
         accessor: (row) => row.address,
         // biome-ignore lint/suspicious/noExplicitAny: FIXME
         Cell: (cell: any) => {
-          return <AddressCopyButton address={cell.row.original.address} />;
+          return (
+            <CopyAddressButton
+              copyIconPosition="left"
+              address={cell.row.original.address}
+              variant="ghost"
+            />
+          );
         },
       },
       {
@@ -358,7 +351,10 @@ const ContractTable: ComponentWithChildren<ContractTableProps> = ({
                 variant="gost"
                 onClick={(e) => e.stopPropagation()}
               />
-              <MenuList onClick={(e) => e.stopPropagation()}>
+              <MenuList
+                onClick={(e) => e.stopPropagation()}
+                className="bg-background"
+              >
                 <RemoveFromDashboardButton
                   contractAddress={cell.cell.row.original.address}
                   chainId={cell.cell.row.original.chainId}
@@ -412,12 +408,7 @@ const ContractTable: ComponentWithChildren<ContractTableProps> = ({
   }, [numRowsOnPage, setPageSize]);
 
   return (
-    <TableContainer
-      overflowX={{ base: "auto", md: "initial" }}
-      // to avoid clipping the network selector menu on mobile
-      minH={{ base: "600px", md: "initial" }}
-      className="relative"
-    >
+    <TableContainer>
       {isFetching && (
         <Spinner
           color="primary"
@@ -427,27 +418,31 @@ const ContractTable: ComponentWithChildren<ContractTableProps> = ({
           right={4}
         />
       )}
-      <Table {...getTableProps()}>
-        <Thead>
+      <Table {...getTableProps()} className="bg-background">
+        <TableHeader className="!bg-muted/50">
           {headerGroups.map((headerGroup, index) => (
             // biome-ignore lint/suspicious/noArrayIndexKey: FIXME
-            <Tr {...headerGroup.getHeaderGroupProps()} key={index}>
+            <TableRow {...headerGroup.getHeaderGroupProps()} key={index}>
               {headerGroup.headers.map((column, i) => (
-                // biome-ignore lint/suspicious/noArrayIndexKey: FIXME
-                <Th {...column.getHeaderProps()} border="none" key={i}>
+                <TableHead
+                  {...column.getHeaderProps()}
+                  // biome-ignore lint/suspicious/noArrayIndexKey: FIXME
+                  key={i}
+                  className="py-3"
+                >
                   <Text as="label" size="label.sm" color="faded">
                     {column.render("Header")}
                     <Box>
                       {column.canFilter ? column.render("Filter") : null}
                     </Box>
                   </Text>
-                </Th>
+                </TableHead>
               ))}
-            </Tr>
+            </TableRow>
           ))}
-        </Thead>
+        </TableHeader>
 
-        <Tbody {...getTableBodyProps()}>
+        <TableBody {...getTableBodyProps()}>
           {page.map((row) => {
             prepareRow(row);
             return (
@@ -457,7 +452,7 @@ const ContractTable: ComponentWithChildren<ContractTableProps> = ({
               />
             );
           })}
-        </Tbody>
+        </TableBody>
       </Table>
       {canNextPage && (
         <ShowMoreButton
@@ -466,7 +461,15 @@ const ContractTable: ComponentWithChildren<ContractTableProps> = ({
           setShowMoreLimit={setNumRowsOnPage}
         />
       )}
-      {children}
+
+      {loading && (
+        <div className="flex items-center justify-center py-4">
+          <div className="flex gap-2 items-center text-muted-foreground">
+            <Spinner size="sm" />
+            Loading contracts
+          </div>
+        </div>
+      )}
     </TableContainer>
   );
 };
@@ -476,32 +479,27 @@ const ContractTableRow = memo(({ row }: { row: Row<BasicContract> }) => {
   const router = useRouter();
 
   return (
-    <Tr
+    <TableRow
       {...row.getRowProps()}
       role="group"
-      // this is a hack to get around the fact that safari does not handle position: relative on table rows
-      style={{ cursor: "pointer" }}
+      className="cursor-pointer hover:bg-muted/50"
       onClick={() => {
         router.push(`/${chainSlug}/${row.original.address}`);
       }}
-      // end hack
-      borderBottomWidth={1}
-      _last={{ borderBottomWidth: 0 }}
     >
       {row.cells.map((cell, cellIndex) => {
         return (
-          <Td
-            borderBottomWidth="inherit"
-            borderBottomColor="borderColor"
+          <TableCell
+            className="py-3"
             {...cell.getCellProps()}
             // biome-ignore lint/suspicious/noArrayIndexKey: FIXME
             key={cellIndex}
           >
             {cell.render("Cell")}
-          </Td>
+          </TableCell>
         );
       })}
-    </Tr>
+    </TableRow>
   );
 });
 

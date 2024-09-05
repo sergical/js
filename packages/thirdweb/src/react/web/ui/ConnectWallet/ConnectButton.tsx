@@ -346,6 +346,7 @@ export function ConnectButton(props: ConnectButtonProps) {
           showThirdwebBranding: props.connectModal?.showThirdwebBranding,
           termsOfServiceUrl: props.connectModal?.termsOfServiceUrl,
           privacyPolicyUrl: props.connectModal?.privacyPolicyUrl,
+          requireApproval: props.connectModal?.requireApproval,
         }}
         welcomeScreen={props.connectModal?.welcomeScreen}
         size={size}
@@ -543,6 +544,9 @@ function ConnectButtonInner(
         showAllWallets: props.showAllWallets,
         walletConnect: props.walletConnect,
         wallets: props.wallets,
+        hideReceiveFunds: props.detailsModal?.hideReceiveFunds,
+        hideSendFunds: props.detailsModal?.hideSendFunds,
+        hideBuyFunds: props.detailsModal?.hideBuyFunds,
       }}
     />
   );

@@ -26,7 +26,16 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 interface PayConfigProps {
-  apiKey: ApiKey;
+  apiKey: Pick<
+    ApiKey,
+    | "services"
+    | "id"
+    | "name"
+    | "domains"
+    | "bundleIds"
+    | "services"
+    | "redirectUrls"
+  >;
 }
 
 const TRACKING_CATEGORY = "pay";
@@ -52,7 +61,7 @@ export const PayConfig: React.FC<PayConfigProps> = ({ apiKey }) => {
     <Card className="flex flex-col gap-8 py-6 px-8">
       <div className="flex flex-col gap-2">
         <h2 className="font-bold text-lg">Fee Sharing</h2>
-        <p className="text-secondary-foreground text-sm">
+        <p className="text-muted-foreground text-sm">
           thirdweb collects a 1% fee per end user transaction through{" "}
           <strong>Buy With Crypto</strong>. We share 30% of this fee with you.{" "}
           <Link

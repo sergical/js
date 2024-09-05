@@ -110,13 +110,13 @@ export function CreateTicket() {
       }}
     >
       <DialogTrigger asChild>
-        <Button variant="primary" className="mt-6" size="lg">
+        <Button variant="default" className="mt-6" size="lg">
           Get Support
         </Button>
       </DialogTrigger>
 
       {/* Check this */}
-      <DialogContent>
+      <DialogContent className="max-h-full overflow-x-auto">
         <form ref={formRef} action={formAction}>
           <DialogHeader>
             <DialogTitle>Get in touch</DialogTitle>

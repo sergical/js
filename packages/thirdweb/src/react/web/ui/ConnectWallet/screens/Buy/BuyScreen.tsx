@@ -59,7 +59,11 @@ import {
   type PaymentMethods,
   useEnabledPaymentMethods,
 } from "./main/useEnabledPaymentMethods.js";
-import { useUISelectionStates } from "./main/useUISelectionStates.js";
+import {
+  useFiatCurrencySelectionStates,
+  useFromTokenSelectionStates,
+  useToTokenSelectionStates,
+} from "./main/useUISelectionStates.js";
 import { openOnrampPopup } from "./openOnRamppopup.js";
 import { BuyTokenInput } from "./swap/BuyTokenInput.js";
 import { FiatFees, SwapFees } from "./swap/Fees.js";
@@ -134,32 +138,25 @@ function BuyScreenContent(props: BuyScreenContentProps) {
     id: "main",
   });
 
-  const [hasEditedAmount, setHasEditedAmount] = useState(false);
-
-  const onDone = useCallback(() => {
-    setScreen({ id: "main" });
-    props.onDone();
-  }, [props.onDone]);
-
-  // UI selection
   const {
     tokenAmount,
     setTokenAmount,
     toChain,
     setToChain,
     deferredTokenAmount,
-    fromChain,
-    setFromChain,
     toToken,
     setToToken,
-    fromToken,
-    setFromToken,
-    selectedCurrency,
-    setSelectedCurrency,
-  } = useUISelectionStates({
+  } = useToTokenSelectionStates({
     payOptions,
     supportedDestinations,
   });
+
+  const [hasEditedAmount, setHasEditedAmount] = useState(false);
+
+  const onDone = useCallback(() => {
+    setScreen({ id: "main" });
+    props.onDone();
+  }, [props.onDone]);
 
   // check if the screen is expanded or not
 
@@ -185,12 +182,25 @@ function BuyScreenContent(props: BuyScreenContentProps) {
       return undefined;
     }
 
+    const supportedSources = supportedSourcesQuery.data;
+
     return createSupportedTokens(
-      supportedSourcesQuery.data,
+      supportedSources,
       payOptions,
       props.supportedTokens,
     );
   }, [props.supportedTokens, supportedSourcesQuery.data, payOptions]);
+
+  const { fromChain, setFromChain, fromToken, setFromToken } =
+    useFromTokenSelectionStates({
+      payOptions,
+      supportedSources: supportedSourcesQuery.data || [],
+    });
+
+  const { selectedCurrency, setSelectedCurrency } =
+    useFiatCurrencySelectionStates({
+      payOptions,
+    });
 
   const enabledPaymentMethods = useEnabledPaymentMethods({
     payOptions: props.payOptions,
@@ -255,7 +265,7 @@ function BuyScreenContent(props: BuyScreenContentProps) {
             : props.connectOptions?.showAllWallets
         }
         walletConnect={props.connectOptions?.walletConnect}
-        wallets={props.connectOptions?.wallets}
+        wallets={props.connectOptions?.wallets?.filter((w) => w.id !== "inApp")}
       />
     );
   }
@@ -1071,13 +1081,21 @@ function SwapScreenContent(props: {
 
   function showSwapFlow() {
     if (
-      (props.payOptions.mode === "transaction" ||
-        props.payOptions.mode === "direct_payment") &&
+      props.payOptions.mode === "direct_payment" &&
+      !isNotEnoughBalance &&
+      !swapRequired
+    ) {
+      // same currency, just direct transfer
+      setScreen({
+        id: "transfer-flow",
+      });
+    } else if (
+      props.payOptions.mode === "transaction" &&
       !isNotEnoughBalance &&
       !swapRequired
     ) {
       if (payer.account.address !== receiverAddress) {
-        // same currency, just transfer, but from another wallet
+        // needs transfer from another wallet before executing the transaction
         setScreen({
           id: "transfer-flow",
         });
@@ -1120,7 +1138,7 @@ function SwapScreenContent(props: {
                   Fees
                 </Text>
                 <Spacer y="lg" />
-                <SwapFees quote={quoteQuery.data} align="left" />
+                <SwapFees quote={quoteQuery.data} />
               </div>
             )}
           </Drawer>

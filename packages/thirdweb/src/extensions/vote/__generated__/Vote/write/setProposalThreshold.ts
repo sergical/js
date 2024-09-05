@@ -6,7 +6,6 @@ import type {
 import { prepareContractCall } from "../../../../../transaction/prepare-contract-call.js";
 import { encodeAbiParameters } from "../../../../../utils/abi/encodeAbiParameters.js";
 import { once } from "../../../../../utils/promise/once.js";
-import type { ThirdwebContract } from "../../../../../contract/contract.js";
 import { detectMethod } from "../../../../../utils/bytecode/detectExtension.js";
 
 /**
@@ -30,21 +29,19 @@ const FN_OUTPUTS = [] as const;
 
 /**
  * Checks if the `setProposalThreshold` method is supported by the given contract.
- * @param contract The ThirdwebContract.
- * @returns A promise that resolves to a boolean indicating if the `setProposalThreshold` method is supported.
+ * @param availableSelectors An array of 4byte function selectors of the contract. You can get this in various ways, such as using "whatsabi" or if you have the ABI of the contract available you can use it to generate the selectors.
+ * @returns A boolean indicating if the `setProposalThreshold` method is supported.
  * @extension VOTE
  * @example
  * ```ts
  * import { isSetProposalThresholdSupported } from "thirdweb/extensions/vote";
  *
- * const supported = await isSetProposalThresholdSupported(contract);
+ * const supported = isSetProposalThresholdSupported(["0x..."]);
  * ```
  */
-export async function isSetProposalThresholdSupported(
-  contract: ThirdwebContract<any>,
-) {
+export function isSetProposalThresholdSupported(availableSelectors: string[]) {
   return detectMethod({
-    contract,
+    availableSelectors,
     method: [FN_SELECTOR, FN_INPUTS, FN_OUTPUTS] as const,
   });
 }
@@ -56,7 +53,7 @@ export async function isSetProposalThresholdSupported(
  * @extension VOTE
  * @example
  * ```ts
- * import { encodeSetProposalThresholdParams } "thirdweb/extensions/vote";
+ * import { encodeSetProposalThresholdParams } from "thirdweb/extensions/vote";
  * const result = encodeSetProposalThresholdParams({
  *  newProposalThreshold: ...,
  * });
@@ -75,7 +72,7 @@ export function encodeSetProposalThresholdParams(
  * @extension VOTE
  * @example
  * ```ts
- * import { encodeSetProposalThreshold } "thirdweb/extensions/vote";
+ * import { encodeSetProposalThreshold } from "thirdweb/extensions/vote";
  * const result = encodeSetProposalThreshold({
  *  newProposalThreshold: ...,
  * });
@@ -99,6 +96,7 @@ export function encodeSetProposalThreshold(
  * @extension VOTE
  * @example
  * ```ts
+ * import { sendTransaction } from "thirdweb";
  * import { setProposalThreshold } from "thirdweb/extensions/vote";
  *
  * const transaction = setProposalThreshold({
@@ -110,8 +108,7 @@ export function encodeSetProposalThreshold(
  * });
  *
  * // Send the transaction
- * ...
- *
+ * await sendTransaction({ transaction, account });
  * ```
  */
 export function setProposalThreshold(

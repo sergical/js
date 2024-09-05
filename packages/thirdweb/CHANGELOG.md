@@ -1,5 +1,120 @@
 # thirdweb
 
+## 5.51.0
+
+### Minor Changes
+
+- [#4392](https://github.com/thirdweb-dev/js/pull/4392) [`c5b9d1c`](https://github.com/thirdweb-dev/js/commit/c5b9d1c5dd592b2334d01f2c5036dd5850984041) Thanks [@jnsdls](https://github.com/jnsdls)! - [Extensions] Erc20 Drop ClaimCondition enhancements
+
+- [#4391](https://github.com/thirdweb-dev/js/pull/4391) [`f9c351c`](https://github.com/thirdweb-dev/js/commit/f9c351c22d9c869770dad13332f9c23d8cb84ed7) Thanks [@jnsdls](https://github.com/jnsdls)! - [Extensions] Erc721 Drop ClaimCondition enhancements
+
+- [`54f0294`](https://github.com/thirdweb-dev/js/commit/54f0294e5edd9940fe2b412c6cfed4fb97c02b87) Thanks [@jnsdls](https://github.com/jnsdls)! - [Extensions] Erc1155 Drop ClaimCondition enhancements
+
+### Patch Changes
+
+- [#4393](https://github.com/thirdweb-dev/js/pull/4393) [`f383fc7`](https://github.com/thirdweb-dev/js/commit/f383fc74842cfe642cd05d8f33b68139ba9f4f2b) Thanks [@kumaryash90](https://github.com/kumaryash90)! - resolve implementation for matic proxy implementation slot
+
+- [`a098224`](https://github.com/thirdweb-dev/js/commit/a09822429b0ac2f6bd2cf716f44d784fe7a0b7ab) Thanks [@jnsdls](https://github.com/jnsdls)! - remove unusable singlephase claim condition extension
+
+## 5.50.1
+
+### Patch Changes
+
+- [#4388](https://github.com/thirdweb-dev/js/pull/4388) [`82a30af`](https://github.com/thirdweb-dev/js/commit/82a30afd4bced6071d87c5c018a33ecf22c0449e) Thanks [@edwardysun](https://github.com/edwardysun)! - Update setting default source chain and token
+
+- [#4375](https://github.com/thirdweb-dev/js/pull/4375) [`edb95d0`](https://github.com/thirdweb-dev/js/commit/edb95d00ca71385459181ced58117dec6619f6e7) Thanks [@jnsdls](https://github.com/jnsdls)! - [Extensions] expose permission detection logic
+
+- [#4390](https://github.com/thirdweb-dev/js/pull/4390) [`d74e61b`](https://github.com/thirdweb-dev/js/commit/d74e61b58162e97327928f6b5117bed2ec09c1b4) Thanks [@MananTank](https://github.com/MananTank)! - Fix Swap Fees layout in fees drawer in pay UI
+
+- [#4319](https://github.com/thirdweb-dev/js/pull/4319) [`73e5dc7`](https://github.com/thirdweb-dev/js/commit/73e5dc727668fb9c6cf185f16d28d28ab248558a) Thanks [@joaquim-verges](https://github.com/joaquim-verges)! - Fix direct payments to the same wallet
+
+- [#4382](https://github.com/thirdweb-dev/js/pull/4382) [`9e8d3e6`](https://github.com/thirdweb-dev/js/commit/9e8d3e66393acb70fb2209c04628aad663e93e03) Thanks [@MananTank](https://github.com/MananTank)! - Add props for hiding "Send", "Receive" and "Send" buttons in Connect Details Modal UI for `ConnectButton` component. By default, all buttons are visible in the modal.
+
+  ```tsx
+  <ConnectButton
+    detailsModal={{
+      hideSendFunds: false,
+      hideReceiveFunds: true,
+      hideBuyFunds: false,
+    }}
+  />
+  ```
+
+- [#4363](https://github.com/thirdweb-dev/js/pull/4363) [`066aede`](https://github.com/thirdweb-dev/js/commit/066aede2d1bf42201c181a1cd12e1655131d1212) Thanks [@kien-ngo](https://github.com/kien-ngo)! - Allow to specify "from" and "to" props for the ClaimButton
+
+## 5.50.0
+
+### Minor Changes
+
+- [#4334](https://github.com/thirdweb-dev/js/pull/4334) [`6432e8d`](https://github.com/thirdweb-dev/js/commit/6432e8dc6bdd0ed985fe0d76e47b36601bfa8be3) Thanks [@gregfromstl](https://github.com/gregfromstl)! - Adds L2 ENS name resolution
+
+### Patch Changes
+
+- [#4270](https://github.com/thirdweb-dev/js/pull/4270) [`5475551`](https://github.com/thirdweb-dev/js/commit/5475551e5de0750ff1b780522cb01e974a828dd2) Thanks [@gregfromstl](https://github.com/gregfromstl)! - Allow accepting a string for signature mint UIDs
+
+- [#4336](https://github.com/thirdweb-dev/js/pull/4336) [`8b137f0`](https://github.com/thirdweb-dev/js/commit/8b137f0fe2acd1ccd0a2d2e217493f018a603de3) Thanks [@gregfromstl](https://github.com/gregfromstl)! - Hide in-app wallet connection in Pay Embed
+
+- [#4344](https://github.com/thirdweb-dev/js/pull/4344) [`915e7fb`](https://github.com/thirdweb-dev/js/commit/915e7fb8795e359c7907d4f13351536ea71ad566) Thanks [@kien-ngo](https://github.com/kien-ngo)! - Fix merkletree proof for Drop contracts
+
+- [#4343](https://github.com/thirdweb-dev/js/pull/4343) [`a2f2c7e`](https://github.com/thirdweb-dev/js/commit/a2f2c7e172f9baea1c649a22abeff6a70aa200d3) Thanks [@joaquim-verges](https://github.com/joaquim-verges)! - Better error message when smart wallet connection fails due to rpc error
+
+- [#4327](https://github.com/thirdweb-dev/js/pull/4327) [`bdb814d`](https://github.com/thirdweb-dev/js/commit/bdb814df6ca2c1fb1068de5be1598695880eed32) Thanks [@kien-ngo](https://github.com/kien-ngo)! - Fix nft approval for CreateDirectListingButton
+
+## 5.49.0
+
+### Minor Changes
+
+- [#4179](https://github.com/thirdweb-dev/js/pull/4179) [`42d5c65`](https://github.com/thirdweb-dev/js/commit/42d5c65e495d56ee211a7b3075e54c4ea190c1e2) Thanks [@kien-ngo](https://github.com/kien-ngo)! - Add NFT prebuilt components
+
+  ```tsx
+  import { getContract } from "thirdweb";
+  import { NFT } from "thirdweb/react";
+
+  const contract = getContract({
+    address: "0x...",
+    chain: ethereum,
+    client: yourThirdwebClient,
+  });
+
+  <NFT contract={contract} tokenId={0n}>
+    <Suspense fallback={"Loading media..."}>
+      <NFT.Media />
+    </Suspense>
+  </NFT>;
+  ```
+
+### Patch Changes
+
+- [#4316](https://github.com/thirdweb-dev/js/pull/4316) [`a65bb88`](https://github.com/thirdweb-dev/js/commit/a65bb8839bfa6d8ea39e9bee4fd04b91378e3e16) Thanks [@gregfromstl](https://github.com/gregfromstl)! - Include from address in in-app wallet transactions
+
+- [#4322](https://github.com/thirdweb-dev/js/pull/4322) [`3e425ec`](https://github.com/thirdweb-dev/js/commit/3e425ecc68e3b601e439a01ad0df032c4a4b9557) Thanks [@gregfromstl](https://github.com/gregfromstl)! - Fix accessibility warnings
+
+- [#4317](https://github.com/thirdweb-dev/js/pull/4317) [`1e70bbf`](https://github.com/thirdweb-dev/js/commit/1e70bbf2c3ab24732806d04c67c3ea9a512abde7) Thanks [@gregfromstl](https://github.com/gregfromstl)! - Automatic retries for React Native in-app wallet logins
+
+- [#4306](https://github.com/thirdweb-dev/js/pull/4306) [`9d6eb27`](https://github.com/thirdweb-dev/js/commit/9d6eb270818581dcd1d8628cf680e82f603756e9) Thanks [@gregfromstl](https://github.com/gregfromstl)! - Fix programmatic deployments with smart accounts
+
+- [#4328](https://github.com/thirdweb-dev/js/pull/4328) [`c97b1a5`](https://github.com/thirdweb-dev/js/commit/c97b1a5d7eecf3392fa9b2280a329833b1798141) Thanks [@edwardysun](https://github.com/edwardysun)! - Update default source chain selection in PayEmbed
+
+## 5.48.3
+
+### Patch Changes
+
+- [#4264](https://github.com/thirdweb-dev/js/pull/4264) [`b661ce7`](https://github.com/thirdweb-dev/js/commit/b661ce7b2fd58e7ff01faf47cf8fb3bb232841ec) Thanks [@kien-ngo](https://github.com/kien-ngo)! - Add extension for deploying VoteERC20 contract
+
+- [#4291](https://github.com/thirdweb-dev/js/pull/4291) [`f346bb8`](https://github.com/thirdweb-dev/js/commit/f346bb8fca5fd828a96ae9d46e14703050564be2) Thanks [@joaquim-verges](https://github.com/joaquim-verges)! - ZkSync gasPubPerData increase for faster inclusion
+
+- [#4271](https://github.com/thirdweb-dev/js/pull/4271) [`fcf8f89`](https://github.com/thirdweb-dev/js/commit/fcf8f89af43dafacfb54a6c8c884b6b3631d5a68) Thanks [@alecananian](https://github.com/alecananian)! - Added overrides for connected wallet name and avatar in details button and modal
+
+- [#4295](https://github.com/thirdweb-dev/js/pull/4295) [`db2ee85`](https://github.com/thirdweb-dev/js/commit/db2ee850f3da8e5857b96efbb7c4242396127d97) Thanks [@gregfromstl](https://github.com/gregfromstl)! - Adds prop to require TOS or Privacy Policy acceptance before connecting to an in-app wallet
+
+- [#4106](https://github.com/thirdweb-dev/js/pull/4106) [`c116597`](https://github.com/thirdweb-dev/js/commit/c1165976410b03754ef65a8f707a4c7fccd3d3a1) Thanks [@joaquim-verges](https://github.com/joaquim-verges)! - Support Entrypoint v0.7 for smart accounts
+
+- [#4307](https://github.com/thirdweb-dev/js/pull/4307) [`dc79abd`](https://github.com/thirdweb-dev/js/commit/dc79abdca06d387516ce1f9c84782a4543d4bde1) Thanks [@MananTank](https://github.com/MananTank)! - Fix `NFTMetadata` type - remove `id` property
+
+- [#4294](https://github.com/thirdweb-dev/js/pull/4294) [`09bb251`](https://github.com/thirdweb-dev/js/commit/09bb25165753841f7d144e22f17cca326c91f8f2) Thanks [@ElasticBottle](https://github.com/ElasticBottle)! - fix: ecosystem wallet signing modal should be clickable even when there's a pop up beneath
+
+- [#4286](https://github.com/thirdweb-dev/js/pull/4286) [`dda57ea`](https://github.com/thirdweb-dev/js/commit/dda57eaad32e38dffecb888494fe2441dc8ff265) Thanks [@edwardysun](https://github.com/edwardysun)! - No retries on permanent failures on Pay quotes
+
 ## 5.48.2
 
 ### Patch Changes

@@ -12,12 +12,13 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { ThirdwebSDKProvider } from "@thirdweb-dev/react";
 import type { Signer } from "ethers";
+import * as ethers from "ethers";
 import { useSupportedChains } from "hooks/chains/configureChains";
 import { useNativeColorMode } from "hooks/useNativeColorMode";
 import { getDashboardChainRpc } from "lib/rpc";
 import { StorageSingleton } from "lib/sdk";
 import { useEffect, useMemo, useState } from "react";
-import { ethers5Adapter } from "thirdweb/adapters/ethers5";
+import { toEthersSigner } from "thirdweb/adapters/ethers5";
 import { type ChainMetadata, ethereum } from "thirdweb/chains";
 import {
   useActiveAccount,
@@ -49,13 +50,19 @@ const THIRDWEB_API_HOST = new URL(
   .toString()
   .slice(0, -1);
 
+const isLocalHost = THIRDWEB_API_HOST.includes("localhost");
+
+const DOMAIN = isLocalHost
+  ? "thirdweb-dev.com"
+  : THIRDWEB_API_HOST.replace("https://api.", "");
+
 // do this upfront
 setThirdwebDomains({
-  bundler: `bundler.${THIRDWEB_API_HOST.replace("https://api.", "")}`,
-  inAppWallet: `embedded-wallet.${THIRDWEB_API_HOST.replace("https://api.", "")}`,
-  pay: `pay.${THIRDWEB_API_HOST.replace("https://api.", "")}`,
-  rpc: `rpc.${THIRDWEB_API_HOST.replace("https://api.", "")}`,
-  storage: `storage.${THIRDWEB_API_HOST.replace("https://api.", "")}`,
+  bundler: `bundler.${DOMAIN}`,
+  inAppWallet: `embedded-wallet.${DOMAIN}`,
+  pay: `pay.${DOMAIN}`,
+  rpc: `rpc.${DOMAIN}`,
+  storage: `storage.${DOMAIN}`,
 });
 
 export interface DashboardThirdwebProviderProps {
@@ -124,11 +131,12 @@ function useEthersSigner() {
         return;
       }
       try {
-        const s = await ethers5Adapter.signer.toEthers({
-          account: activeAccount,
-          chain: activeChain,
-          client: thirdwebClient,
-        });
+        const s = await toEthersSigner(
+          ethers,
+          thirdwebClient,
+          activeAccount,
+          activeChain,
+        );
         if (active) {
           setSigner(s);
         }

@@ -6,7 +6,6 @@ import type {
 import { prepareContractCall } from "../../../../../transaction/prepare-contract-call.js";
 import { encodeAbiParameters } from "../../../../../utils/abi/encodeAbiParameters.js";
 import { once } from "../../../../../utils/promise/once.js";
-import type { ThirdwebContract } from "../../../../../contract/contract.js";
 import { detectMethod } from "../../../../../utils/bytecode/detectExtension.js";
 
 /**
@@ -54,21 +53,19 @@ const FN_OUTPUTS = [
 
 /**
  * Checks if the `castVoteBySig` method is supported by the given contract.
- * @param contract The ThirdwebContract.
- * @returns A promise that resolves to a boolean indicating if the `castVoteBySig` method is supported.
+ * @param availableSelectors An array of 4byte function selectors of the contract. You can get this in various ways, such as using "whatsabi" or if you have the ABI of the contract available you can use it to generate the selectors.
+ * @returns A boolean indicating if the `castVoteBySig` method is supported.
  * @extension VOTE
  * @example
  * ```ts
  * import { isCastVoteBySigSupported } from "thirdweb/extensions/vote";
  *
- * const supported = await isCastVoteBySigSupported(contract);
+ * const supported = isCastVoteBySigSupported(["0x..."]);
  * ```
  */
-export async function isCastVoteBySigSupported(
-  contract: ThirdwebContract<any>,
-) {
+export function isCastVoteBySigSupported(availableSelectors: string[]) {
   return detectMethod({
-    contract,
+    availableSelectors,
     method: [FN_SELECTOR, FN_INPUTS, FN_OUTPUTS] as const,
   });
 }
@@ -80,7 +77,7 @@ export async function isCastVoteBySigSupported(
  * @extension VOTE
  * @example
  * ```ts
- * import { encodeCastVoteBySigParams } "thirdweb/extensions/vote";
+ * import { encodeCastVoteBySigParams } from "thirdweb/extensions/vote";
  * const result = encodeCastVoteBySigParams({
  *  proposalId: ...,
  *  support: ...,
@@ -107,7 +104,7 @@ export function encodeCastVoteBySigParams(options: CastVoteBySigParams) {
  * @extension VOTE
  * @example
  * ```ts
- * import { encodeCastVoteBySig } "thirdweb/extensions/vote";
+ * import { encodeCastVoteBySig } from "thirdweb/extensions/vote";
  * const result = encodeCastVoteBySig({
  *  proposalId: ...,
  *  support: ...,
@@ -133,6 +130,7 @@ export function encodeCastVoteBySig(options: CastVoteBySigParams) {
  * @extension VOTE
  * @example
  * ```ts
+ * import { sendTransaction } from "thirdweb";
  * import { castVoteBySig } from "thirdweb/extensions/vote";
  *
  * const transaction = castVoteBySig({
@@ -148,8 +146,7 @@ export function encodeCastVoteBySig(options: CastVoteBySigParams) {
  * });
  *
  * // Send the transaction
- * ...
- *
+ * await sendTransaction({ transaction, account });
  * ```
  */
 export function castVoteBySig(

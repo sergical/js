@@ -1,6 +1,6 @@
 import { Flex } from "@chakra-ui/react";
 import { Select } from "chakra-react-select";
-import type { SizeProp } from "chakra-react-select/dist/types/types";
+import type { SizeProp } from "chakra-react-select";
 import { useSupportedChains } from "hooks/chains/configureChains";
 import { useMemo } from "react";
 import { useFormContext } from "react-hook-form";
@@ -88,11 +88,11 @@ export const NetworkDropdown: React.FC<NetworkDropdownProps> = ({
           }),
           downChevron: (provided) => ({
             ...provided,
-            color: "gray.500",
+            color: "hsl(var(--text-muted-foreground)/50%)",
           }),
           dropdownIndicator: (provided) => ({
             ...provided,
-            color: "gray.500",
+            color: "hsl(var(--text-muted-foreground)/50%)",
           }),
           control: (provided) => ({
             ...provided,

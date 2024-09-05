@@ -26,7 +26,7 @@ import {
   sendTransaction,
   waitForReceipt,
 } from "thirdweb";
-import { uninstallModuleByProxy } from "thirdweb/extensions/modular";
+import { uninstallModuleByProxy } from "thirdweb/modules";
 import type { Account } from "thirdweb/wallets";
 import { useModuleContractInfo } from "./moduleContractInfo";
 
@@ -242,7 +242,7 @@ function ModuleRow(props: {
         open={isUninstallModalOpen}
         onOpenChange={setIsUninstallModalOpen}
       >
-        <DialogContent>
+        <DialogContent className="z-[10001]" dialogOverlayClassName="z-[10000]">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -307,5 +307,5 @@ function TableHeading(props: { children: React.ReactNode }) {
 }
 
 function TableHeadingRow({ children }: { children: React.ReactNode }) {
-  return <tr className="relative bg-secondary">{children}</tr>;
+  return <tr className="relative bg-muted/50">{children}</tr>;
 }

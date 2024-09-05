@@ -4,7 +4,6 @@ import type { BaseTransactionOptions } from "../../../../../transaction/types.js
 import { encodeAbiParameters } from "../../../../../utils/abi/encodeAbiParameters.js";
 import { decodeAbiParameters } from "viem";
 import type { Hex } from "../../../../../utils/encoding/hex.js";
-import type { ThirdwebContract } from "../../../../../contract/contract.js";
 import { detectMethod } from "../../../../../utils/bytecode/detectExtension.js";
 
 /**
@@ -40,21 +39,18 @@ const FN_OUTPUTS = [
 
 /**
  * Checks if the `isModuleRegisteredAs` method is supported by the given contract.
- * @param contract The ThirdwebContract.
- * @returns A promise that resolves to a boolean indicating if the `isModuleRegisteredAs` method is supported.
+ * @param availableSelectors An array of 4byte function selectors of the contract. You can get this in various ways, such as using "whatsabi" or if you have the ABI of the contract available you can use it to generate the selectors.
+ * @returns A boolean indicating if the `isModuleRegisteredAs` method is supported.
  * @extension LENS
  * @example
  * ```ts
  * import { isIsModuleRegisteredAsSupported } from "thirdweb/extensions/lens";
- *
- * const supported = await isIsModuleRegisteredAsSupported(contract);
+ * const supported = isIsModuleRegisteredAsSupported(["0x..."]);
  * ```
  */
-export async function isIsModuleRegisteredAsSupported(
-  contract: ThirdwebContract<any>,
-) {
+export function isIsModuleRegisteredAsSupported(availableSelectors: string[]) {
   return detectMethod({
-    contract,
+    availableSelectors,
     method: [FN_SELECTOR, FN_INPUTS, FN_OUTPUTS] as const,
   });
 }
@@ -66,7 +62,7 @@ export async function isIsModuleRegisteredAsSupported(
  * @extension LENS
  * @example
  * ```ts
- * import { encodeIsModuleRegisteredAsParams } "thirdweb/extensions/lens";
+ * import { encodeIsModuleRegisteredAsParams } from "thirdweb/extensions/lens";
  * const result = encodeIsModuleRegisteredAsParams({
  *  moduleAddress: ...,
  *  moduleType: ...,
@@ -89,7 +85,7 @@ export function encodeIsModuleRegisteredAsParams(
  * @extension LENS
  * @example
  * ```ts
- * import { encodeIsModuleRegisteredAs } "thirdweb/extensions/lens";
+ * import { encodeIsModuleRegisteredAs } from "thirdweb/extensions/lens";
  * const result = encodeIsModuleRegisteredAs({
  *  moduleAddress: ...,
  *  moduleType: ...,
@@ -115,7 +111,7 @@ export function encodeIsModuleRegisteredAs(
  * @example
  * ```ts
  * import { decodeIsModuleRegisteredAsResult } from "thirdweb/extensions/lens";
- * const result = decodeIsModuleRegisteredAsResult("...");
+ * const result = decodeIsModuleRegisteredAsResultResult("...");
  * ```
  */
 export function decodeIsModuleRegisteredAsResult(result: Hex) {

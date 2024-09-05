@@ -59,6 +59,7 @@ export function AnyWalletConnectUI(props: {
     showThirdwebBranding?: boolean;
     termsOfServiceUrl?: string;
     privacyPolicyUrl?: string;
+    requireApproval?: boolean;
   };
   walletConnect:
     | {
@@ -298,9 +299,7 @@ export function AnyWalletConnectUI(props: {
       locale={locale}
       wallet={props.wallet}
       walletInfo={walletInfo.data}
-      onBack={() => {
-        setScreen("main");
-      }}
+      onBack={props.onBack}
       client={props.client}
     />
   );

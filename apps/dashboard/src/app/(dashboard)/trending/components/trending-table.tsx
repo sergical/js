@@ -1,9 +1,9 @@
-import { ScrollShadow } from "@/components/ui/ScrollShadow/ScrollShadow";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
   TableHeader,
   TableRow,
@@ -33,10 +33,10 @@ export function TrendingContractSection(props: {
   return (
     props.topContracts.length > 0 && (
       <div>
-        <ScrollShadow scrollableClassName="rounded-lg border">
+        <TableContainer>
           <Table className="w-full">
             <TableHeader>
-              <TableRow className="bg-secondary">
+              <TableRow className="bg-muted/50">
                 <TableHead className="text-left">Rank</TableHead>
                 <TableHead>Contract</TableHead>
                 <TableHead>Change</TableHead>
@@ -75,7 +75,7 @@ export function TrendingContractSection(props: {
             <TableBody>
               {props.topContracts.map((contract, index) => (
                 <TableRow
-                  className="relative hover:bg-muted even:bg-secondary/30 "
+                  className="relative hover:bg-muted/50"
                   key={`${contract.chainMetadata.chainId}${contract.contractAddress}${index}`}
                 >
                   {/* Rank */}
@@ -116,7 +116,7 @@ export function TrendingContractSection(props: {
                         {contract.type}
                       </Badge>
                     ) : (
-                      <DotIcon className="size-6 inline text-secondary-foreground" />
+                      <DotIcon className="size-6 inline text-muted-foreground" />
                     )}
                   </TableCell>
 
@@ -138,14 +138,14 @@ export function TrendingContractSection(props: {
                   {/* Value Moved */}
                   <TableCell className="text-right">
                     {contract.valueMoved || (
-                      <DotIcon className="size-6 inline text-secondary-foreground" />
+                      <DotIcon className="size-6 inline text-muted-foreground" />
                     )}
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-        </ScrollShadow>
+        </TableContainer>
 
         {props.showPagination && (
           <div className="w-full flex flex-row gap-4 justify-end mt-10">
@@ -161,9 +161,11 @@ function ChangeCell(props: { displayCount: string; change: number }) {
   if (!props.displayCount) {
     return null;
   }
+
+  const variant = props.change > 0 ? "success" : "destructive";
   const badge = (
     <Badge
-      variant={props.change > 0 ? "success" : "destructive"}
+      variant={variant}
       className="gap-1.5 px-2 py-1 min-w-[80px] flex justify-center"
     >
       {props.change > 0 ? (

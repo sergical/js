@@ -4,7 +4,6 @@ import type { BaseTransactionOptions } from "../../../../../transaction/types.js
 import { encodeAbiParameters } from "../../../../../utils/abi/encodeAbiParameters.js";
 import { decodeAbiParameters } from "viem";
 import type { Hex } from "../../../../../utils/encoding/hex.js";
-import type { ThirdwebContract } from "../../../../../contract/contract.js";
 import { detectMethod } from "../../../../../utils/bytecode/detectExtension.js";
 
 /**
@@ -29,19 +28,18 @@ const FN_OUTPUTS = [
 
 /**
  * Checks if the `resolve` method is supported by the given contract.
- * @param contract The ThirdwebContract.
- * @returns A promise that resolves to a boolean indicating if the `resolve` method is supported.
+ * @param availableSelectors An array of 4byte function selectors of the contract. You can get this in various ways, such as using "whatsabi" or if you have the ABI of the contract available you can use it to generate the selectors.
+ * @returns A boolean indicating if the `resolve` method is supported.
  * @extension LENS
  * @example
  * ```ts
  * import { isResolveSupported } from "thirdweb/extensions/lens";
- *
- * const supported = await isResolveSupported(contract);
+ * const supported = isResolveSupported(["0x..."]);
  * ```
  */
-export async function isResolveSupported(contract: ThirdwebContract<any>) {
+export function isResolveSupported(availableSelectors: string[]) {
   return detectMethod({
-    contract,
+    availableSelectors,
     method: [FN_SELECTOR, FN_INPUTS, FN_OUTPUTS] as const,
   });
 }
@@ -53,7 +51,7 @@ export async function isResolveSupported(contract: ThirdwebContract<any>) {
  * @extension LENS
  * @example
  * ```ts
- * import { encodeResolveParams } "thirdweb/extensions/lens";
+ * import { encodeResolveParams } from "thirdweb/extensions/lens";
  * const result = encodeResolveParams({
  *  handleId: ...,
  * });
@@ -70,7 +68,7 @@ export function encodeResolveParams(options: ResolveParams) {
  * @extension LENS
  * @example
  * ```ts
- * import { encodeResolve } "thirdweb/extensions/lens";
+ * import { encodeResolve } from "thirdweb/extensions/lens";
  * const result = encodeResolve({
  *  handleId: ...,
  * });
@@ -91,7 +89,7 @@ export function encodeResolve(options: ResolveParams) {
  * @example
  * ```ts
  * import { decodeResolveResult } from "thirdweb/extensions/lens";
- * const result = decodeResolveResult("...");
+ * const result = decodeResolveResultResult("...");
  * ```
  */
 export function decodeResolveResult(result: Hex) {

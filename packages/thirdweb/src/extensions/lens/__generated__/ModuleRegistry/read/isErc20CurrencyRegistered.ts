@@ -4,7 +4,6 @@ import type { BaseTransactionOptions } from "../../../../../transaction/types.js
 import { encodeAbiParameters } from "../../../../../utils/abi/encodeAbiParameters.js";
 import { decodeAbiParameters } from "viem";
 import type { Hex } from "../../../../../utils/encoding/hex.js";
-import type { ThirdwebContract } from "../../../../../contract/contract.js";
 import { detectMethod } from "../../../../../utils/bytecode/detectExtension.js";
 
 /**
@@ -32,21 +31,20 @@ const FN_OUTPUTS = [
 
 /**
  * Checks if the `isErc20CurrencyRegistered` method is supported by the given contract.
- * @param contract The ThirdwebContract.
- * @returns A promise that resolves to a boolean indicating if the `isErc20CurrencyRegistered` method is supported.
+ * @param availableSelectors An array of 4byte function selectors of the contract. You can get this in various ways, such as using "whatsabi" or if you have the ABI of the contract available you can use it to generate the selectors.
+ * @returns A boolean indicating if the `isErc20CurrencyRegistered` method is supported.
  * @extension LENS
  * @example
  * ```ts
  * import { isIsErc20CurrencyRegisteredSupported } from "thirdweb/extensions/lens";
- *
- * const supported = await isIsErc20CurrencyRegisteredSupported(contract);
+ * const supported = isIsErc20CurrencyRegisteredSupported(["0x..."]);
  * ```
  */
-export async function isIsErc20CurrencyRegisteredSupported(
-  contract: ThirdwebContract<any>,
+export function isIsErc20CurrencyRegisteredSupported(
+  availableSelectors: string[],
 ) {
   return detectMethod({
-    contract,
+    availableSelectors,
     method: [FN_SELECTOR, FN_INPUTS, FN_OUTPUTS] as const,
   });
 }
@@ -58,7 +56,7 @@ export async function isIsErc20CurrencyRegisteredSupported(
  * @extension LENS
  * @example
  * ```ts
- * import { encodeIsErc20CurrencyRegisteredParams } "thirdweb/extensions/lens";
+ * import { encodeIsErc20CurrencyRegisteredParams } from "thirdweb/extensions/lens";
  * const result = encodeIsErc20CurrencyRegisteredParams({
  *  currencyAddress: ...,
  * });
@@ -77,7 +75,7 @@ export function encodeIsErc20CurrencyRegisteredParams(
  * @extension LENS
  * @example
  * ```ts
- * import { encodeIsErc20CurrencyRegistered } "thirdweb/extensions/lens";
+ * import { encodeIsErc20CurrencyRegistered } from "thirdweb/extensions/lens";
  * const result = encodeIsErc20CurrencyRegistered({
  *  currencyAddress: ...,
  * });
@@ -102,7 +100,7 @@ export function encodeIsErc20CurrencyRegistered(
  * @example
  * ```ts
  * import { decodeIsErc20CurrencyRegisteredResult } from "thirdweb/extensions/lens";
- * const result = decodeIsErc20CurrencyRegisteredResult("...");
+ * const result = decodeIsErc20CurrencyRegisteredResultResult("...");
  * ```
  */
 export function decodeIsErc20CurrencyRegisteredResult(result: Hex) {

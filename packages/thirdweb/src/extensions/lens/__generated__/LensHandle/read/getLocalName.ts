@@ -4,7 +4,6 @@ import type { BaseTransactionOptions } from "../../../../../transaction/types.js
 import { encodeAbiParameters } from "../../../../../utils/abi/encodeAbiParameters.js";
 import { decodeAbiParameters } from "viem";
 import type { Hex } from "../../../../../utils/encoding/hex.js";
-import type { ThirdwebContract } from "../../../../../contract/contract.js";
 import { detectMethod } from "../../../../../utils/bytecode/detectExtension.js";
 
 /**
@@ -29,19 +28,18 @@ const FN_OUTPUTS = [
 
 /**
  * Checks if the `getLocalName` method is supported by the given contract.
- * @param contract The ThirdwebContract.
- * @returns A promise that resolves to a boolean indicating if the `getLocalName` method is supported.
+ * @param availableSelectors An array of 4byte function selectors of the contract. You can get this in various ways, such as using "whatsabi" or if you have the ABI of the contract available you can use it to generate the selectors.
+ * @returns A boolean indicating if the `getLocalName` method is supported.
  * @extension LENS
  * @example
  * ```ts
  * import { isGetLocalNameSupported } from "thirdweb/extensions/lens";
- *
- * const supported = await isGetLocalNameSupported(contract);
+ * const supported = isGetLocalNameSupported(["0x..."]);
  * ```
  */
-export async function isGetLocalNameSupported(contract: ThirdwebContract<any>) {
+export function isGetLocalNameSupported(availableSelectors: string[]) {
   return detectMethod({
-    contract,
+    availableSelectors,
     method: [FN_SELECTOR, FN_INPUTS, FN_OUTPUTS] as const,
   });
 }
@@ -53,7 +51,7 @@ export async function isGetLocalNameSupported(contract: ThirdwebContract<any>) {
  * @extension LENS
  * @example
  * ```ts
- * import { encodeGetLocalNameParams } "thirdweb/extensions/lens";
+ * import { encodeGetLocalNameParams } from "thirdweb/extensions/lens";
  * const result = encodeGetLocalNameParams({
  *  tokenId: ...,
  * });
@@ -70,7 +68,7 @@ export function encodeGetLocalNameParams(options: GetLocalNameParams) {
  * @extension LENS
  * @example
  * ```ts
- * import { encodeGetLocalName } "thirdweb/extensions/lens";
+ * import { encodeGetLocalName } from "thirdweb/extensions/lens";
  * const result = encodeGetLocalName({
  *  tokenId: ...,
  * });
@@ -93,7 +91,7 @@ export function encodeGetLocalName(options: GetLocalNameParams) {
  * @example
  * ```ts
  * import { decodeGetLocalNameResult } from "thirdweb/extensions/lens";
- * const result = decodeGetLocalNameResult("...");
+ * const result = decodeGetLocalNameResultResult("...");
  * ```
  */
 export function decodeGetLocalNameResult(result: Hex) {

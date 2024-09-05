@@ -92,7 +92,7 @@ export const ContractCard: React.FC<ContractCardProps> = ({
     <article
       className={cn(
         "min-h-[220px] p-4 border border-border relative rounded-lg flex flex-col",
-        !showSkeleton ? "bg-secondary hover:bg-muted" : "pointer-events-none",
+        !showSkeleton ? "bg-muted/50 hover:bg-muted" : "pointer-events-none",
       )}
     >
       <TrackedLinkTW
@@ -127,7 +127,7 @@ export const ContractCard: React.FC<ContractCardProps> = ({
                 <ShieldCheckIcon className="size-4" />
                 Audited
               </Link>
-              <div className="size-1 bg-secondary-foreground/40 rounded-full" />
+              <div className="size-1 bg-muted-foreground/50 rounded-full" />
             </>
           )}
 
@@ -137,7 +137,7 @@ export const ContractCard: React.FC<ContractCardProps> = ({
             loadedData={publishedContractResult.data?.version}
             render={(v) => {
               return (
-                <p className="text-secondary-foreground text-sm font-medium">
+                <p className="text-muted-foreground text-sm font-medium">
                   v{v}
                 </p>
               );
@@ -172,7 +172,7 @@ export const ContractCard: React.FC<ContractCardProps> = ({
       />
 
       {publishedContractResult.data ? (
-        <p className="text-sm text-secondary-foreground leading-5 mt-1">
+        <p className="text-sm text-muted-foreground leading-5 mt-1">
           {publishedContractResult.data?.description}
         </p>
       ) : (

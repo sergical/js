@@ -4,10 +4,13 @@ import { eth_getStorageAt } from "../../rpc/actions/eth_getStorageAt.js";
 import { getRpcClient } from "../../rpc/rpc.js";
 import { readContract } from "../../transaction/read-contract.js";
 import { isAddress } from "../address.js";
+import type { Hex } from "../encoding/hex.js";
 import { extractMinimalProxyImplementationAddress } from "./extractMnimalProxyImplementationAddress.js";
 
 // TODO: move to const exports
 const AddressZero = "0x0000000000000000000000000000000000000000";
+const ZERO_BYTES32 =
+  "0x0000000000000000000000000000000000000000000000000000000000000000";
 
 /**
  * Resolves the implementation address and bytecode for a given proxy contract.
@@ -23,7 +26,7 @@ const AddressZero = "0x0000000000000000000000000000000000000000";
 export async function resolveImplementation(
   // biome-ignore lint/suspicious/noExplicitAny: TODO: fix any
   contract: ThirdwebContract<any>,
-): Promise<{ address: string; bytecode: string }> {
+): Promise<{ address: string; bytecode: Hex }> {
   const [originalBytecode, beacon] = await Promise.all([
     getBytecode(contract),
     getBeaconFromStorageSlot(contract),
@@ -117,11 +120,23 @@ async function getImplementationFromStorageSlot(
   });
 
   try {
-    const proxyStorage = await eth_getStorageAt(rpcRequest, {
+    let proxyStorage = "";
+
+    proxyStorage = await eth_getStorageAt(rpcRequest, {
       address: contract.address,
       position:
         "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc",
     });
+
+    if (proxyStorage === ZERO_BYTES32 && contract.chain.id === 137) {
+      proxyStorage = await eth_getStorageAt(rpcRequest, {
+        address: contract.address,
+        position:
+          // keccak256("matic.network.proxy.implementation") - used in polygon USDT proxy: https://polygonscan.com/address/0xc2132d05d31c914a87c6611c10748aeb04b58e8f#code
+          "0xbaab7dbf64751104133af04abc7d9979f0fda3b059a322a8333f533d3f32bf7f",
+      });
+    }
+
     return `0x${proxyStorage.slice(-40)}`;
   } catch {
     return undefined;

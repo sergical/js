@@ -19,7 +19,7 @@ import { TransactionModal } from "../../ui/TransactionButton/TransactionModal.js
  * Refer to [`SendTransactionConfig`](https://portal.thirdweb.com/references/typescript/v5/SendTransactionConfig) for more details.
  * @example
  *
- * ### Using a prepared contract call
+ * ### Sending a prepared contract call
  *
  * ```tsx
  * import { useSendTransaction } from "thirdweb/react";
@@ -71,23 +71,18 @@ import { TransactionModal } from "../../ui/TransactionButton/TransactionModal.js
  *
  * ```tsx
  * import { useSendTransaction } from "thirdweb/react";
- * import { getContract, prepareTransaction } from "thirdweb";
+ * import { prepareTransaction } from "thirdweb";
  * import { sepolia } from "thirdweb/chains";
- *
- * const contract = getContract({
- *   address: "0x...",
- *   chain: sepolia,
- *   client,
- * });
  *
  * const { mutate: sendTx, data: transactionResult } = useSendTransaction();
  *
  * const onClick = () => {
+ *   // Send 0.1 SepoliaETH to an address
  *   const transaction = prepareTransaction({
- *       contract,
- *       to: "0x...",
- *       value: toWei("0.1"),
- *     }),
+ *     to: "0x...",
+ *     value: toWei("0.1"),
+ *     chain: sepolia,
+ *     client: thirdwebClient,
  *   });
  *   sendTx(transaction);
  * };

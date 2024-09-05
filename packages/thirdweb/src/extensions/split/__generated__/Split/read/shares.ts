@@ -4,7 +4,6 @@ import type { BaseTransactionOptions } from "../../../../../transaction/types.js
 import { encodeAbiParameters } from "../../../../../utils/abi/encodeAbiParameters.js";
 import { decodeAbiParameters } from "viem";
 import type { Hex } from "../../../../../utils/encoding/hex.js";
-import type { ThirdwebContract } from "../../../../../contract/contract.js";
 import { detectMethod } from "../../../../../utils/bytecode/detectExtension.js";
 
 /**
@@ -29,19 +28,18 @@ const FN_OUTPUTS = [
 
 /**
  * Checks if the `shares` method is supported by the given contract.
- * @param contract The ThirdwebContract.
- * @returns A promise that resolves to a boolean indicating if the `shares` method is supported.
+ * @param availableSelectors An array of 4byte function selectors of the contract. You can get this in various ways, such as using "whatsabi" or if you have the ABI of the contract available you can use it to generate the selectors.
+ * @returns A boolean indicating if the `shares` method is supported.
  * @extension SPLIT
  * @example
  * ```ts
  * import { isSharesSupported } from "thirdweb/extensions/split";
- *
- * const supported = await isSharesSupported(contract);
+ * const supported = isSharesSupported(["0x..."]);
  * ```
  */
-export async function isSharesSupported(contract: ThirdwebContract<any>) {
+export function isSharesSupported(availableSelectors: string[]) {
   return detectMethod({
-    contract,
+    availableSelectors,
     method: [FN_SELECTOR, FN_INPUTS, FN_OUTPUTS] as const,
   });
 }
@@ -53,7 +51,7 @@ export async function isSharesSupported(contract: ThirdwebContract<any>) {
  * @extension SPLIT
  * @example
  * ```ts
- * import { encodeSharesParams } "thirdweb/extensions/split";
+ * import { encodeSharesParams } from "thirdweb/extensions/split";
  * const result = encodeSharesParams({
  *  account: ...,
  * });
@@ -70,7 +68,7 @@ export function encodeSharesParams(options: SharesParams) {
  * @extension SPLIT
  * @example
  * ```ts
- * import { encodeShares } "thirdweb/extensions/split";
+ * import { encodeShares } from "thirdweb/extensions/split";
  * const result = encodeShares({
  *  account: ...,
  * });
@@ -91,7 +89,7 @@ export function encodeShares(options: SharesParams) {
  * @example
  * ```ts
  * import { decodeSharesResult } from "thirdweb/extensions/split";
- * const result = decodeSharesResult("...");
+ * const result = decodeSharesResultResult("...");
  * ```
  */
 export function decodeSharesResult(result: Hex) {

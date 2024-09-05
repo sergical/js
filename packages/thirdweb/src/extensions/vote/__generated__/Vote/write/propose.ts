@@ -6,7 +6,6 @@ import type {
 import { prepareContractCall } from "../../../../../transaction/prepare-contract-call.js";
 import { encodeAbiParameters } from "../../../../../utils/abi/encodeAbiParameters.js";
 import { once } from "../../../../../utils/promise/once.js";
-import type { ThirdwebContract } from "../../../../../contract/contract.js";
 import { detectMethod } from "../../../../../utils/bytecode/detectExtension.js";
 
 /**
@@ -53,19 +52,19 @@ const FN_OUTPUTS = [
 
 /**
  * Checks if the `propose` method is supported by the given contract.
- * @param contract The ThirdwebContract.
- * @returns A promise that resolves to a boolean indicating if the `propose` method is supported.
+ * @param availableSelectors An array of 4byte function selectors of the contract. You can get this in various ways, such as using "whatsabi" or if you have the ABI of the contract available you can use it to generate the selectors.
+ * @returns A boolean indicating if the `propose` method is supported.
  * @extension VOTE
  * @example
  * ```ts
  * import { isProposeSupported } from "thirdweb/extensions/vote";
  *
- * const supported = await isProposeSupported(contract);
+ * const supported = isProposeSupported(["0x..."]);
  * ```
  */
-export async function isProposeSupported(contract: ThirdwebContract<any>) {
+export function isProposeSupported(availableSelectors: string[]) {
   return detectMethod({
-    contract,
+    availableSelectors,
     method: [FN_SELECTOR, FN_INPUTS, FN_OUTPUTS] as const,
   });
 }
@@ -77,7 +76,7 @@ export async function isProposeSupported(contract: ThirdwebContract<any>) {
  * @extension VOTE
  * @example
  * ```ts
- * import { encodeProposeParams } "thirdweb/extensions/vote";
+ * import { encodeProposeParams } from "thirdweb/extensions/vote";
  * const result = encodeProposeParams({
  *  targets: ...,
  *  values: ...,
@@ -102,7 +101,7 @@ export function encodeProposeParams(options: ProposeParams) {
  * @extension VOTE
  * @example
  * ```ts
- * import { encodePropose } "thirdweb/extensions/vote";
+ * import { encodePropose } from "thirdweb/extensions/vote";
  * const result = encodePropose({
  *  targets: ...,
  *  values: ...,
@@ -125,6 +124,7 @@ export function encodePropose(options: ProposeParams) {
  * @extension VOTE
  * @example
  * ```ts
+ * import { sendTransaction } from "thirdweb";
  * import { propose } from "thirdweb/extensions/vote";
  *
  * const transaction = propose({
@@ -139,8 +139,7 @@ export function encodePropose(options: ProposeParams) {
  * });
  *
  * // Send the transaction
- * ...
- *
+ * await sendTransaction({ transaction, account });
  * ```
  */
 export function propose(

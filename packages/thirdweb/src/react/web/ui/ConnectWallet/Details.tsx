@@ -185,6 +185,9 @@ export const ConnectedWalletDetails: React.FC<{
     );
   }
 
+  const avatarSrc =
+    props.detailsButton?.connectedAccountAvatarUrl ?? ensAvatarQuery.data;
+
   return (
     <WalletInfoButton
       type="button"
@@ -203,10 +206,10 @@ export const ConnectedWalletDetails: React.FC<{
           height: "35px",
         }}
       >
-        {ensAvatarQuery.data ? (
+        {avatarSrc ? (
           <img
             alt=""
-            src={ensAvatarQuery.data}
+            src={avatarSrc}
             style={{
               width: "100%",
               height: "100%",
@@ -226,18 +229,14 @@ export const ConnectedWalletDetails: React.FC<{
         }}
       >
         {/* Address */}
-        {addressOrENS ? (
-          <Text
-            size="xs"
-            color="primaryText"
-            weight={500}
-            className={`${TW_CONNECTED_WALLET}__address`}
-          >
-            {addressOrENS}
-          </Text>
-        ) : (
-          <Skeleton height={fontSize.xs} width="80px" />
-        )}
+        <Text
+          size="xs"
+          color="primaryText"
+          weight={500}
+          className={`${TW_CONNECTED_WALLET}__address`}
+        >
+          {props.detailsButton?.connectedAccountName ?? addressOrENS}
+        </Text>
 
         {/* Balance */}
         {balanceQuery.data ? (
@@ -371,6 +370,14 @@ function DetailsModal(props: {
     </MenuButton>
   );
 
+  const avatarSrc =
+    props.detailsModal?.connectedAccountAvatarUrl ?? ensAvatarQuery.data;
+
+  const { hideSendFunds, hideReceiveFunds, hideBuyFunds } =
+    props.detailsModal || {};
+
+  const hideAllButtons = hideSendFunds && hideReceiveFunds && hideBuyFunds;
+
   const avatarContent = (
     <Container
       style={{
@@ -387,9 +394,9 @@ function DetailsModal(props: {
           overflow: "hidden",
         }}
       >
-        {ensAvatarQuery.data ? (
+        {avatarSrc ? (
           <img
-            src={ensAvatarQuery.data}
+            src={avatarSrc}
             style={{
               width: iconSize.xxl,
               height: iconSize.xxl,
@@ -405,36 +412,47 @@ function DetailsModal(props: {
           )
         )}
       </Container>
-      <Container
-        style={{
-          position: "absolute",
-          bottom: -2,
-          right: -2,
-        }}
-      >
-        <IconContainer
+      {!props.detailsModal?.hideSwitchWallet ? (
+        <Container
           style={{
-            background: theme.colors.modalBg,
+            position: "absolute",
+            bottom: -2,
+            right: -2,
           }}
-          padding="4px"
         >
-          {activeWallet && (
-            <WalletImage
-              style={{ borderRadius: 0 }}
-              id={activeWallet.id}
-              client={client}
-              size="12"
-            />
-          )}
-        </IconContainer>
-      </Container>
+          <IconContainer
+            style={{
+              background: theme.colors.modalBg,
+            }}
+            padding="4px"
+          >
+            {activeWallet && (
+              <WalletImage
+                style={{ borderRadius: 0 }}
+                id={activeWallet.id}
+                client={client}
+                size="12"
+              />
+            )}
+          </IconContainer>
+        </Container>
+      ) : null}
     </Container>
   );
 
   let content = (
     <div>
       <Spacer y="xs" />
-      <Container p="lg" gap="sm" flex="row" center="y">
+      <Container
+        px="lg"
+        gap="sm"
+        flex="row"
+        center="y"
+        style={{
+          paddingTop: spacing.lg,
+          paddingBottom: hideAllButtons ? spacing.md : spacing.lg,
+        }}
+      >
         {props.detailsModal?.hideSwitchWallet ? (
           avatarContent
         ) : (
@@ -465,7 +483,7 @@ function DetailsModal(props: {
             }}
           >
             <Text color="primaryText" weight={500} size="md">
-              {addressOrENS}
+              {props.detailsModal?.connectedAccountName ?? addressOrENS}
             </Text>
             <IconButton>
               <CopyIcon
@@ -477,81 +495,99 @@ function DetailsModal(props: {
           <InAppWalletUserInfo client={client} locale={locale} />
         </Container>
       </Container>
-      <Container px="lg">
-        {/* Send, Receive, Swap */}
-        <Container
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr",
-            gap: spacing.xs,
-          }}
-        >
-          <Button
-            variant="outline"
-            style={{
-              fontSize: fontSize.sm,
-              display: "flex",
-              gap: spacing.xs,
-              alignItems: "center",
-              padding: spacing.sm,
-            }}
-            onClick={() => {
-              setScreen("send");
-            }}
-          >
-            <Container color="secondaryText" flex="row" center="both">
-              <PaperPlaneIcon
-                width={iconSize.sm}
-                height={iconSize.sm}
-                style={{
-                  transform: "translateY(-10%) rotate(-45deg) ",
-                }}
-              />
-            </Container>
 
-            {locale.send}
-          </Button>
+      {!hideAllButtons && (
+        <>
+          <Container px="lg">
+            {/* Send, Receive, Swap */}
+            <Container
+              style={{
+                display: "flex",
+                gap: spacing.xs,
+              }}
+            >
+              {!hideSendFunds && (
+                <Button
+                  variant="outline"
+                  style={{
+                    fontSize: fontSize.sm,
+                    display: "flex",
+                    gap: spacing.xs,
+                    alignItems: "center",
+                    padding: spacing.sm,
+                    flex: 1,
+                  }}
+                  onClick={() => {
+                    setScreen("send");
+                  }}
+                >
+                  <Container color="secondaryText" flex="row" center="both">
+                    <PaperPlaneIcon
+                      width={iconSize.sm}
+                      height={iconSize.sm}
+                      style={{
+                        transform: "translateY(-10%) rotate(-45deg) ",
+                      }}
+                    />
+                  </Container>
 
-          <Button
-            variant="outline"
-            style={{
-              fontSize: fontSize.sm,
-              display: "flex",
-              gap: spacing.xs,
-              alignItems: "center",
-              padding: spacing.sm,
-            }}
-            onClick={() => {
-              setScreen("receive");
-            }}
-          >
-            <Container color="secondaryText" flex="row" center="both">
-              <PinBottomIcon width={iconSize.sm} height={iconSize.sm} />{" "}
-            </Container>
-            {locale.receive}{" "}
-          </Button>
+                  {locale.send}
+                </Button>
+              )}
 
-          <Button
-            variant="outline"
-            style={{
-              fontSize: fontSize.sm,
-              display: "flex",
-              gap: spacing.xs,
-              alignItems: "center",
-              padding: spacing.sm,
-            }}
-            onClick={() => {
-              setScreen("buy");
-            }}
-          >
-            <Container color="secondaryText" flex="row" center="both">
-              <PlusIcon width={iconSize.sm} height={iconSize.sm} />
+              {!hideReceiveFunds && (
+                <Button
+                  variant="outline"
+                  style={{
+                    fontSize: fontSize.sm,
+                    display: "flex",
+                    gap: spacing.xs,
+                    alignItems: "center",
+                    padding: spacing.sm,
+                    flex: 1,
+                  }}
+                  onClick={() => {
+                    setScreen("receive");
+                  }}
+                >
+                  <Container color="secondaryText" flex="row" center="both">
+                    <PinBottomIcon
+                      width={iconSize.sm}
+                      height={iconSize.sm}
+                    />{" "}
+                  </Container>
+                  {locale.receive}{" "}
+                </Button>
+              )}
+
+              {!hideBuyFunds && (
+                <Button
+                  variant="outline"
+                  style={{
+                    fontSize: fontSize.sm,
+                    display: "flex",
+                    gap: spacing.xs,
+                    alignItems: "center",
+                    padding: spacing.sm,
+                    flex: 1,
+                  }}
+                  onClick={() => {
+                    setScreen("buy");
+                  }}
+                >
+                  <Container color="secondaryText" flex="row" center="both">
+                    <PlusIcon width={iconSize.sm} height={iconSize.sm} />
+                  </Container>
+                  {locale.buy}
+                </Button>
+              )}
             </Container>
-            {locale.buy}
-          </Button>
-        </Container>
-      </Container>
-      <Spacer y="md" />
+          </Container>
+
+          <Spacer y="md" />
+        </>
+      )}
+
       <Container px="md">
         <Container
           flex="column"
@@ -1039,6 +1075,7 @@ function InAppWalletUserInfo(props: {
 
       return email || phone || null;
     },
+    enabled: !isSmartWallet,
   });
 
   if (isSmartWallet) {
@@ -1117,6 +1154,9 @@ export type DetailsModalConnectOptions = {
   chains?: Chain[];
   recommendedWallets?: Wallet[];
   showAllWallets?: boolean;
+  hideSendFunds?: boolean;
+  hideReceiveFunds?: boolean;
+  hideBuyFunds?: boolean;
 };
 
 export type UseWalletDetailsModalOptions = {
@@ -1330,6 +1370,16 @@ export type UseWalletDetailsModalOptions = {
    * Options to configure the Connect UI shown when user clicks the "Connect Wallet" button in the Wallet Switcher screen.
    */
   connectOptions?: DetailsModalConnectOptions;
+
+  /**
+   * Render custom UI for the connected wallet name in the `ConnectButton` Details Modal, overriding ENS name or wallet address.
+   */
+  connectedAccountName?: React.ReactNode;
+
+  /**
+   * Use custom avatar URL for the connected wallet image in the `ConnectButton` Details Modal, overriding ENS avatar or Blobbie icon.
+   */
+  connectedAccountAvatarUrl?: string;
 };
 
 /**
@@ -1382,6 +1432,8 @@ export function useWalletDetailsModal() {
               networkSelector: props.networkSelector,
               payOptions: props.payOptions,
               showTestnetFaucet: props.showTestnetFaucet,
+              connectedAccountName: props.connectedAccountName,
+              connectedAccountAvatarUrl: props.connectedAccountAvatarUrl,
             }}
             displayBalanceToken={props.displayBalanceToken}
             theme={props.theme || "dark"}

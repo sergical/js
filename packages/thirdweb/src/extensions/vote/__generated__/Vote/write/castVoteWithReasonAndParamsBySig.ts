@@ -6,7 +6,6 @@ import type {
 import { prepareContractCall } from "../../../../../transaction/prepare-contract-call.js";
 import { encodeAbiParameters } from "../../../../../utils/abi/encodeAbiParameters.js";
 import { once } from "../../../../../utils/promise/once.js";
-import type { ThirdwebContract } from "../../../../../contract/contract.js";
 import { detectMethod } from "../../../../../utils/bytecode/detectExtension.js";
 
 /**
@@ -64,21 +63,21 @@ const FN_OUTPUTS = [
 
 /**
  * Checks if the `castVoteWithReasonAndParamsBySig` method is supported by the given contract.
- * @param contract The ThirdwebContract.
- * @returns A promise that resolves to a boolean indicating if the `castVoteWithReasonAndParamsBySig` method is supported.
+ * @param availableSelectors An array of 4byte function selectors of the contract. You can get this in various ways, such as using "whatsabi" or if you have the ABI of the contract available you can use it to generate the selectors.
+ * @returns A boolean indicating if the `castVoteWithReasonAndParamsBySig` method is supported.
  * @extension VOTE
  * @example
  * ```ts
  * import { isCastVoteWithReasonAndParamsBySigSupported } from "thirdweb/extensions/vote";
  *
- * const supported = await isCastVoteWithReasonAndParamsBySigSupported(contract);
+ * const supported = isCastVoteWithReasonAndParamsBySigSupported(["0x..."]);
  * ```
  */
-export async function isCastVoteWithReasonAndParamsBySigSupported(
-  contract: ThirdwebContract<any>,
+export function isCastVoteWithReasonAndParamsBySigSupported(
+  availableSelectors: string[],
 ) {
   return detectMethod({
-    contract,
+    availableSelectors,
     method: [FN_SELECTOR, FN_INPUTS, FN_OUTPUTS] as const,
   });
 }
@@ -90,7 +89,7 @@ export async function isCastVoteWithReasonAndParamsBySigSupported(
  * @extension VOTE
  * @example
  * ```ts
- * import { encodeCastVoteWithReasonAndParamsBySigParams } "thirdweb/extensions/vote";
+ * import { encodeCastVoteWithReasonAndParamsBySigParams } from "thirdweb/extensions/vote";
  * const result = encodeCastVoteWithReasonAndParamsBySigParams({
  *  proposalId: ...,
  *  support: ...,
@@ -123,7 +122,7 @@ export function encodeCastVoteWithReasonAndParamsBySigParams(
  * @extension VOTE
  * @example
  * ```ts
- * import { encodeCastVoteWithReasonAndParamsBySig } "thirdweb/extensions/vote";
+ * import { encodeCastVoteWithReasonAndParamsBySig } from "thirdweb/extensions/vote";
  * const result = encodeCastVoteWithReasonAndParamsBySig({
  *  proposalId: ...,
  *  support: ...,
@@ -153,6 +152,7 @@ export function encodeCastVoteWithReasonAndParamsBySig(
  * @extension VOTE
  * @example
  * ```ts
+ * import { sendTransaction } from "thirdweb";
  * import { castVoteWithReasonAndParamsBySig } from "thirdweb/extensions/vote";
  *
  * const transaction = castVoteWithReasonAndParamsBySig({
@@ -170,8 +170,7 @@ export function encodeCastVoteWithReasonAndParamsBySig(
  * });
  *
  * // Send the transaction
- * ...
- *
+ * await sendTransaction({ transaction, account });
  * ```
  */
 export function castVoteWithReasonAndParamsBySig(
