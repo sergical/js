@@ -20,6 +20,8 @@ import { ContractPublisher, replaceDeployerAddress } from "../publisher";
 interface ContractCardProps {
   publisher: string;
   contractId: string;
+  titleOverride?: string;
+  descriptionOverride?: string;
   version?: string;
   tracking?: {
     source: string;
@@ -42,11 +44,13 @@ function getContractUrl(
     version,
     publisher,
     contractId,
+    titleOverride,
     modules = [],
   }: {
     publisher: string;
     contractId: string;
     version?: string;
+    titleOverride?: string;
     modules?: {
       publisher: string;
       moduleId: string;
@@ -70,6 +74,10 @@ function getContractUrl(
     moudleUrl.append("module", btoa(JSON.stringify(m)));
   }
 
+  if (titleOverride) {
+    moudleUrl.append("displayName", titleOverride);
+  }
+
   pathName += `?${moudleUrl.toString()}`;
   return replaceDeployerAddress(pathName);
 }
@@ -77,6 +85,8 @@ function getContractUrl(
 export const ContractCard: React.FC<ContractCardProps> = ({
   publisher,
   contractId,
+  titleOverride,
+  descriptionOverride,
   version = "latest",
   tracking,
   modules = [],
@@ -102,6 +112,7 @@ export const ContractCard: React.FC<ContractCardProps> = ({
           contractId,
           version,
           modules,
+          titleOverride,
         })}
         category="contract_card"
         label={contractId}
@@ -159,6 +170,7 @@ export const ContractCard: React.FC<ContractCardProps> = ({
         className="inline-block"
         skeletonData="Edition Drop"
         loadedData={
+          titleOverride ||
           publishedContractResult.data?.displayName ||
           publishedContractResult.data?.name
         }
@@ -173,7 +185,7 @@ export const ContractCard: React.FC<ContractCardProps> = ({
 
       {publishedContractResult.data ? (
         <p className="text-sm text-muted-foreground leading-5 mt-1">
-          {publishedContractResult.data?.description}
+          {descriptionOverride || publishedContractResult.data?.description}
         </p>
       ) : (
         <div className="mt-1">

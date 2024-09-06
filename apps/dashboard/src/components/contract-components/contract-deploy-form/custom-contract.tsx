@@ -81,6 +81,11 @@ export type CustomContractDeploymentFormData = {
   saltForCreate2: string;
   signerAsSalt: boolean;
   deployParams: Record<string, string>;
+  defaultModules: {
+    moduleName: string;
+    moduleVersion: string;
+    publisherAddress: string;
+  }[];
   modularContractDefaultModulesInstallParams: Record<string, string>[];
   contractMetadata?: {
     name: string;
@@ -231,6 +236,7 @@ const CustomContractForm: React.FC<CustomContractFormProps> = ({
       signerAsSalt: true,
       deployParams: parsedDeployParams,
       recipients: [{ address: connectedWallet || "", sharesBps: 10000 }],
+      defaultModules,
       // set default values for modular contract modules with custom components
       modularContractDefaultModulesInstallParams:
         (activeAccount &&
@@ -260,6 +266,7 @@ const CustomContractForm: React.FC<CustomContractFormProps> = ({
       modularContractDefaultModulesInstallParams.data,
       isTWPublisher,
       activeAccount,
+      defaultModules,
     ],
   );
 

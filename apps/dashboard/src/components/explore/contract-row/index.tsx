@@ -57,16 +57,21 @@ export const ContractRow: React.FC<ContractRowProps> = ({ category }) => {
           const modules = Array.isArray(publishedContractId)
             ? publishedContractId[1]
             : undefined;
+          const overrides = Array.isArray(publishedContractId)
+            ? publishedContractId[2]
+            : undefined;
 
           return (
             <ContractCard
-              key={publisher + contractId}
+              key={publisher + contractId + overrides?.title}
               publisher={publisher}
               contractId={contractId}
               tracking={{
                 source: category.id,
                 itemIndex: `${idx}`,
               }}
+              titleOverride={overrides?.title}
+              descriptionOverride={overrides?.description}
               isBeta={category.isBeta}
               modules={
                 modules?.length

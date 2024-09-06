@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Sidebar } from "../../@/components/blocks/Sidebar";
+import { Badge } from "../../@/components/ui/badge";
 import { useDashboardRouter } from "../../@/lib/DashboardRouter";
 import { shareLink } from "../../@/lib/shareLink";
 
@@ -48,6 +49,13 @@ export const PublishWithVersionPage: React.FC<PublishWithVersionPageProps> = ({
   const router = useDashboardRouter();
   const pathname = usePathname();
   const searchparams = useSearchParams();
+  const modules = (searchparams?.getAll("module") || [])
+    .map((m) => JSON.parse(atob(m)))
+    .map((m) => ({
+      publisherAddress: m.publisher,
+      moduleName: m.moduleId,
+      moduleVersion: m.version || "latest",
+    }));
 
   const stringifiedSearchParams = searchparams?.toString();
 
@@ -114,27 +122,44 @@ export const PublishWithVersionPage: React.FC<PublishWithVersionPageProps> = ({
   );
 
   const contractInfo = (
-    <div className="flex gap-4 items-center flex-1">
-      {publishedContract?.logo && (
-        <div className="rounded-xl p-2 border border-border shrink-0 items-center justify-center hidden md:flex">
-          <img
-            className="size-12"
-            alt={publishedContract.name}
-            src={replaceIpfsUrl(publishedContract.logo)}
-          />
-        </div>
-      )}
+    <div className="flex flex-col gap-2">
+      <div className="flex gap-4 items-center flex-1">
+        {publishedContract?.logo && (
+          <div className="rounded-xl p-2 border border-border shrink-0 items-center justify-center hidden md:flex">
+            <img
+              className="size-12"
+              alt={publishedContract.name}
+              src={replaceIpfsUrl(publishedContract.logo)}
+            />
+          </div>
+        )}
 
-      <div className="flex flex-col gap-1">
-        <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-          {contractNameDisplay}
-        </h1>
-        <p className="text-muted-foreground text-sm">
-          {publishedContract?.description}
-        </p>
+        <div className="flex flex-col gap-1">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+            {contractNameDisplay}
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            {publishedContract?.description}
+          </p>
+        </div>
       </div>
     </div>
   );
+
+  const modulesList = modules.length ? (
+    <>
+      <div className="mt-auto flex flex-row gap-2 flex-wrap">
+        {modules.map((m) => (
+          <Badge
+            variant="outline"
+            key={m.publisherAddress + m.moduleName + m.moduleVersion}
+          >
+            {m.moduleName.split("ERC")[0]}
+          </Badge>
+        ))}
+      </div>
+    </>
+  ) : null;
 
   if (isDeploy) {
     const showLoading = !deployContractId || !publishedContract;
@@ -164,7 +189,7 @@ export const PublishWithVersionPage: React.FC<PublishWithVersionPageProps> = ({
         {/* Right */}
         <div className="flex-1">
           {/* header */}
-          <div className="py-6 border-b border-border md:py-12">
+          <div className="py-6 flex flex-col gap-4 border-b border-border md:py-12">
             <div className="flex flex-col md:flex-row justify-between gap-6 md:items-center">
               {contractInfo}
               <div className="flex flex-col-reverse  md:flex-row gap-3">
@@ -192,6 +217,7 @@ export const PublishWithVersionPage: React.FC<PublishWithVersionPageProps> = ({
                 </div>
               </div>
             </div>
+            {modulesList}
           </div>
 
           {/* Content */}
@@ -215,7 +241,7 @@ export const PublishWithVersionPage: React.FC<PublishWithVersionPageProps> = ({
   return (
     <Flex direction="column" gap={{ base: 6, md: 10 }}>
       {/* Header */}
-      <div className="py-2 md:pt-8 md:pb-0">
+      <div className="py-2 flex flex-col gap-4 md:pt-8 md:pb-0">
         <div className="flex flex-col md:flex-row justify-between gap-6">
           {contractInfo}
           <div className="flex gap-3">
@@ -230,6 +256,7 @@ export const PublishWithVersionPage: React.FC<PublishWithVersionPageProps> = ({
             </Button>
           </div>
         </div>
+        {modulesList}
       </div>
 
       {/* Content */}

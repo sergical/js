@@ -11,7 +11,13 @@ export interface ExploreCategory {
   learnMore?: string;
   contracts:
     | Array<PublishedContractID>
-    | Array<[PublishedContractID, Array<PublishedContractID>]>;
+    | Array<
+        [
+          PublishedContractID,
+          Array<PublishedContractID>,
+          { title: string; description: string },
+        ]
+      >;
   showInExplore?: boolean;
   isBeta?: boolean;
 }
@@ -89,7 +95,7 @@ const MARKETS = {
 
 const MODULAR_CONTRACTS = {
   id: "modular-contracts",
-  name: "Drop",
+  name: "modular",
   displayName: "Modular Contracts (Beta)",
   description:
     "Collection of highly customizable and upgradeable smart contracts built with the modular contracts framework.",
@@ -100,34 +106,62 @@ const MODULAR_CONTRACTS = {
       "thirdweb.eth/ERC721CoreInitializable",
       [
         "deployer.thirdweb.eth/ClaimableERC721",
-        // "deployer.thirdweb.eth/RoyaltyERC721",
-        "deployer.thirdweb.eth/DelayedRevealBatchMetadataERC721",
+        "deployer.thirdweb.eth/BatchMetadataERC721",
       ],
+      {
+        title: "Modular NFT Drop",
+        description: "ERC721 NFTs that anyone can mint.",
+      },
     ],
     // erc721 token
     [
       "thirdweb.eth/ERC721CoreInitializable",
       [
         "deployer.thirdweb.eth/MintableERC721",
-        // "deployer.thirdweb.eth/RoyaltyERC721",
+        "deployer.thirdweb.eth/BatchMetadataERC721",
       ],
+      {
+        title: "Modular NFT Collection",
+        description: "ERC721 NFTs that only owners can mint.",
+      },
+    ],
+    // open edition 721
+    [
+      "thirdweb.eth/ERC721CoreInitializable",
+      [
+        "deployer.thirdweb.eth/ClaimableERC721",
+        "deployer.thirdweb.eth/OpenEditionMetadataERC721",
+      ],
+      {
+        title: "Modular Open Edition",
+        description: "ERC721 NFTs with identical metadata.",
+      },
     ],
     // erc1155 drop
     [
       "thirdweb.eth/ERC1155CoreInitializable",
       [
         "deployer.thirdweb.eth/ClaimableERC1155",
-        // "deployer.thirdweb.eth/RoyaltyERC1155",
         "deployer.thirdweb.eth/BatchMetadataERC1155",
+        "deployer.thirdweb.eth/SequentialTokenIdERC1155",
       ],
+      {
+        title: "Modular Edition Drop",
+        description: "ERC1155 NFTs that others can mint.",
+      },
     ],
     // erc1155 token
     [
       "thirdweb.eth/ERC1155CoreInitializable",
       [
         "deployer.thirdweb.eth/MintableERC1155",
-        // "deployer.thirdweb.eth/RoyaltyERC1155",
+        "deployer.thirdweb.eth/BatchMetadataERC1155",
+        "deployer.thirdweb.eth/SequentialTokenIdERC1155",
       ],
+      {
+        title: "Modular Edition",
+        description: "ERC1155 NFTs that only owners can mint.",
+      },
     ],
     // erc20 drop
     [
@@ -136,6 +170,10 @@ const MODULAR_CONTRACTS = {
         "deployer.thirdweb.eth/ClaimableERC20",
         "deployer.thirdweb.eth/TransferableERC20",
       ],
+      {
+        title: "Modular Token Drop",
+        description: "ERC20 Tokens that others can mint.",
+      },
     ],
     // erc20 token
     [
@@ -144,15 +182,10 @@ const MODULAR_CONTRACTS = {
         "deployer.thirdweb.eth/MintableERC20",
         "deployer.thirdweb.eth/TransferableERC20",
       ],
-    ],
-    // open edition 721
-    [
-      "thirdweb.eth/ERC721CoreInitializable",
-      [
-        "deployer.thirdweb.eth/ClaimableERC721",
-        // "deployer.thirdweb.eth/RoyaltyERC721",
-        "deployer.thirdweb.eth/OpenEditionMetadataERC721",
-      ],
+      {
+        title: "Modular Token",
+        description: "ERC20 Tokens that only owners can mint.",
+      },
     ],
   ],
 } satisfies ExploreCategory;

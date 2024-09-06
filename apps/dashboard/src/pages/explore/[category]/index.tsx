@@ -101,11 +101,16 @@ const ExploreCategoryPage: ThirdwebNextPage = (
             const modules = Array.isArray(publishedContractId)
               ? publishedContractId[1]
               : undefined;
+            const overrides = Array.isArray(publishedContractId)
+              ? publishedContractId[2]
+              : undefined;
             return (
               <ContractCard
-                key={publisher + contractId}
+                key={publisher + contractId + overrides?.title}
                 publisher={publisher}
                 contractId={contractId}
+                titleOverride={overrides?.title}
+                descriptionOverride={overrides?.description}
                 tracking={{
                   source: props.category.id,
                   itemIndex: `${idx}`,
