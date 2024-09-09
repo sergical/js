@@ -23,7 +23,35 @@ export function trackConnect(args: {
 /**
  * @internal
  */
+export function trackPayEvent(args: {
+  client: ThirdwebClient;
+  event: string;
+  walletAddress?: string;
+  fromToken?: string;
+  fromAmount?: string;
+  toToken?: string;
+  toAmount?: string;
+  chainId?: number;
+  dstChainId?: number;
+}) {
+  track(args.client, {
+    source: "pay",
+    action: args.event,
+    clientId: args.client.clientId,
+    chainId: args.chainId,
+    walletAddress: args.walletAddress,
+    tokenAddress: args.fromToken,
+    amountWei: args.fromAmount,
+    dstTokenAddress: args.toToken,
+    dstChainId: args.chainId,
+  });
+}
+
+/**
+ * @internal
+ */
 function track(client: ThirdwebClient, data: object) {
+  console.log("tracking", data);
   const fetch = getClientFetch(client);
 
   fetch(ANALYTICS_ENDPOINT, {

@@ -1,5 +1,6 @@
 import { IdCardIcon } from "@radix-ui/react-icons";
 import { useCallback, useMemo, useState } from "react";
+import { trackPayEvent } from "../../../../../../analytics/track.js";
 import type { Chain } from "../../../../../../chains/types.js";
 import type { ThirdwebClient } from "../../../../../../client/client.js";
 import { NATIVE_TOKEN_ADDRESS } from "../../../../../../constants/addresses.js";
@@ -528,7 +529,12 @@ function BuyScreenContent(props: BuyScreenContentProps) {
               }}
             >
               {screen.id === "select-payment-method" && (
-                <PaymentMethodSelection setScreen={(id) => setScreen({ id })} />
+                <PaymentMethodSelection
+                  client={client}
+                  walletAddress={payer.account.address}
+                  walletType={payer.wallet.id}
+                  setScreen={(id) => setScreen({ id })}
+                />
               )}
 
               {screen.id === "select-wallet" && (
@@ -891,6 +897,9 @@ function TokenSelectedLayout(props: {
 }
 
 function PaymentMethodSelection(props: {
+  client: ThirdwebClient;
+  walletAddress: string;
+  walletType: string;
   setScreen: (screenId: "select-wallet" | "buy-with-fiat") => void;
 }) {
   return (
@@ -900,7 +909,14 @@ function PaymentMethodSelection(props: {
         <Button
           variant="outline"
           bg="tertiaryBg"
-          onClick={() => props.setScreen("buy-with-fiat")}
+          onClick={() => {
+            trackPayEvent({
+              event: "pay_with_credit_card_click",
+              client: props.client,
+              walletAddress: props.walletAddress,
+            });
+            props.setScreen("buy-with-fiat");
+          }}
           gap="sm"
           style={{
             justifyContent: "flex-start",
@@ -928,7 +944,15 @@ function PaymentMethodSelection(props: {
         <Button
           variant="outline"
           bg="tertiaryBg"
-          onClick={() => props.setScreen("select-wallet")}
+          onClick={() => {
+            trackPayEvent({
+              event: "pay_with_crypto_click",
+              client: props.client,
+              walletAddress: props.walletAddress,
+            });
+
+            props.setScreen("select-wallet");
+          }}
           style={{
             justifyContent: "flex-start",
           }}

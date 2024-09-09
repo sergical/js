@@ -1,3 +1,4 @@
+import { trackPayEvent } from "../../../../../../analytics/track.js";
 import type { Chain } from "../../../../../../chains/types.js";
 import type { ThirdwebClient } from "../../../../../../client/client.js";
 import { NATIVE_TOKEN_ADDRESS } from "../../../../../../constants/addresses.js";
@@ -225,6 +226,11 @@ export function TransactionModeScreen(props: {
             ) {
               totalCostWei += transactionCostAndData.gasCostWei;
             }
+            trackPayEvent({
+              event: "choose_payment_method_click",
+              client,
+              walletAddress: payerAccount.address,
+            });
             onContinue(
               toTokens(totalCostWei, transactionCostAndData.decimals),
               payUiOptions.transaction.chain,

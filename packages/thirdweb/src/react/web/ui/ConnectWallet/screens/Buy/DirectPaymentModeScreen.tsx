@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { trackPayEvent } from "../../../../../../analytics/track.js";
 import type { Chain } from "../../../../../../chains/types.js";
 import type { ThirdwebClient } from "../../../../../../client/client.js";
 import { NATIVE_TOKEN_ADDRESS } from "../../../../../../constants/addresses.js";
@@ -242,6 +243,11 @@ export function DirectPaymentModeScreen(props: {
           variant="accent"
           fullWidth
           onClick={() => {
+            trackPayEvent({
+              event: "choose_payment_method_click",
+              client,
+              walletAddress: payerAccount.address,
+            });
             onContinue(totalCost, paymentInfo.chain, token);
           }}
         >
