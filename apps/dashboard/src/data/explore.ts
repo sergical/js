@@ -107,6 +107,7 @@ const MODULAR_CONTRACTS = {
       [
         "deployer.thirdweb.eth/ClaimableERC721",
         "deployer.thirdweb.eth/BatchMetadataERC721",
+        "deployer.thirdweb.eth/TransferableERC721",
       ],
       {
         title: "Modular NFT Drop",

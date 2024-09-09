@@ -29,6 +29,7 @@ import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { FormProvider, type UseFormReturn, useForm } from "react-hook-form";
 import { FiHelpCircle } from "react-icons/fi";
+import { ZERO_ADDRESS } from "thirdweb";
 import { computePublishedContractAddress } from "thirdweb/deploys";
 import { useActiveAccount } from "thirdweb/react";
 import { encodeAbiParameters } from "thirdweb/utils";
@@ -248,6 +249,8 @@ const CustomContractForm: React.FC<CustomContractFormProps> = ({
             // set connected wallet address as default "royaltyRecipient"
             if (showRoyaltyFieldset(paramNames)) {
               returnVal.royaltyRecipient = activeAccount.address;
+              returnVal.royaltyBps = "0";
+              returnVal.transferValidator = ZERO_ADDRESS;
             }
 
             // set connected wallet address as default "primarySaleRecipient"
@@ -443,6 +446,20 @@ const CustomContractForm: React.FC<CustomContractFormProps> = ({
             const moduleInstallData: string[] =
               modularContractDefaultModulesInstallParams.data.map(
                 (ext, extIndex) => {
+                  console.log("ext", {
+                    ext: ext.moduleName,
+                    // param name+type []
+                    params: ext.params.map((p) => ({
+                      name: p.name,
+                      type: p.type,
+                    })),
+                    // value []
+                    values: Object.values(
+                      formData.modularContractDefaultModulesInstallParams[
+                        extIndex
+                      ] || {},
+                    ),
+                  });
                   return encodeAbiParameters(
                     // param name+type []
                     ext.params.map((p) => ({ name: p.name, type: p.type })),
@@ -470,6 +487,7 @@ const CustomContractForm: React.FC<CustomContractFormProps> = ({
 
             deployParams._moduleInstallData = JSON.stringify(moduleInstallData);
             deployParams._modules = JSON.stringify(moduleInstallationAddresses);
+            console.log("deployParams", deployParams);
           }
 
           deploy.mutate(
