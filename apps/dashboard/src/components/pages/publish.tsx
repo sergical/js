@@ -8,7 +8,6 @@ import { useTrack } from "hooks/analytics/useTrack";
 import { replaceIpfsUrl } from "lib/sdk";
 import { ChevronsRightIcon } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { ContractDeployForm } from "../contract-components/contract-deploy-form";
 
@@ -19,6 +18,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useDashboardRouter } from "@/lib/DashboardRouter";
+import { usePathname } from "next/navigation";
 import { Sidebar } from "../../@/components/blocks/Sidebar";
 import { shareLink } from "../../@/lib/shareLink";
 
@@ -44,7 +45,8 @@ export const PublishWithVersionPage: React.FC<PublishWithVersionPageProps> = ({
   const availableVersions = allVersions.data?.map(({ version: v }) => v) || [];
   const version = _version || availableVersions[0];
   const trackEvent = useTrack();
-  const router = useRouter();
+  const pathname = usePathname();
+  const router = useDashboardRouter();
 
   const publishedContract = useMemo(() => {
     return (
@@ -162,7 +164,7 @@ export const PublishWithVersionPage: React.FC<PublishWithVersionPageProps> = ({
                 <div className="flex gap-3">
                   <Button asChild variant="outline">
                     <Link
-                      href={`${router.asPath.replace("/deploy", "")}`}
+                      href={`${pathname?.replace("/deploy", "")}`}
                       target="_blank"
                     >
                       Contract
@@ -211,7 +213,7 @@ export const PublishWithVersionPage: React.FC<PublishWithVersionPageProps> = ({
           <div className="flex gap-3">
             {versionSelector}
             <Button asChild variant="primary" className="gap-2">
-              <Link href={`${router.asPath}/deploy`}>
+              <Link href={`${pathname}/deploy`}>
                 Deploy Now
                 <ChevronsRightIcon className="size-4" />
               </Link>
