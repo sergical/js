@@ -151,7 +151,7 @@ export const PublishWithVersionPage: React.FC<PublishWithVersionPageProps> = ({
       <div className="mt-auto flex flex-row gap-2 flex-wrap">
         {modules.map((m) => (
           <Badge
-            variant="outline"
+            variant="default"
             key={m.publisherAddress + m.moduleName + m.moduleVersion}
           >
             {m.moduleName.split("ERC")[0]}

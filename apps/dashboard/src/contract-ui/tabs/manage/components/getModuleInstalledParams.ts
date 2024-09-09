@@ -46,8 +46,6 @@ export async function getModuleInstalledParams(ext: ModuleMeta) {
     "encodeBytesOnInstall",
   );
 
-  console.log("installParamsForModule", ext.moduleName, installParamsForModule);
-
   return {
     moduleName: ext.moduleName,
     params: installParamsForModule,

@@ -446,20 +446,6 @@ const CustomContractForm: React.FC<CustomContractFormProps> = ({
             const moduleInstallData: string[] =
               modularContractDefaultModulesInstallParams.data.map(
                 (ext, extIndex) => {
-                  console.log("ext", {
-                    ext: ext.moduleName,
-                    // param name+type []
-                    params: ext.params.map((p) => ({
-                      name: p.name,
-                      type: p.type,
-                    })),
-                    // value []
-                    values: Object.values(
-                      formData.modularContractDefaultModulesInstallParams[
-                        extIndex
-                      ] || {},
-                    ),
-                  });
                   return encodeAbiParameters(
                     // param name+type []
                     ext.params.map((p) => ({ name: p.name, type: p.type })),
@@ -487,7 +473,6 @@ const CustomContractForm: React.FC<CustomContractFormProps> = ({
 
             deployParams._moduleInstallData = JSON.stringify(moduleInstallData);
             deployParams._modules = JSON.stringify(moduleInstallationAddresses);
-            console.log("deployParams", deployParams);
           }
 
           deploy.mutate(

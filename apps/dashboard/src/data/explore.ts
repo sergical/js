@@ -107,7 +107,7 @@ const MODULAR_CONTRACTS = {
       [
         "deployer.thirdweb.eth/ClaimableERC721",
         "deployer.thirdweb.eth/BatchMetadataERC721",
-        "deployer.thirdweb.eth/TransferableERC721",
+        "deployer.thirdweb.eth/RoyaltyERC721",
       ],
       {
         title: "Modular NFT Drop",
@@ -120,6 +120,7 @@ const MODULAR_CONTRACTS = {
       [
         "deployer.thirdweb.eth/MintableERC721",
         "deployer.thirdweb.eth/BatchMetadataERC721",
+        "deployer.thirdweb.eth/TransferableERC721",
       ],
       {
         title: "Modular NFT Collection",
@@ -132,6 +133,7 @@ const MODULAR_CONTRACTS = {
       [
         "deployer.thirdweb.eth/ClaimableERC721",
         "deployer.thirdweb.eth/OpenEditionMetadataERC721",
+        "deployer.thirdweb.eth/RoyaltyERC721",
       ],
       {
         title: "Modular Open Edition",
@@ -144,6 +146,7 @@ const MODULAR_CONTRACTS = {
       [
         "deployer.thirdweb.eth/ClaimableERC1155",
         "deployer.thirdweb.eth/BatchMetadataERC1155",
+        "deployer.thirdweb.eth/RoyaltyERC1155",
         "deployer.thirdweb.eth/SequentialTokenIdERC1155",
       ],
       {
@@ -157,6 +160,7 @@ const MODULAR_CONTRACTS = {
       [
         "deployer.thirdweb.eth/MintableERC1155",
         "deployer.thirdweb.eth/BatchMetadataERC1155",
+        "deployer.thirdweb.eth/TransferableERC1155",
         "deployer.thirdweb.eth/SequentialTokenIdERC1155",
       ],
       {

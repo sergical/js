@@ -17,7 +17,7 @@ export function RoyaltyFieldset(props: {
     value: string;
     setValue: (value: string) => void;
   };
-  transferValidator: {
+  transferValidator?: {
     isInvalid: boolean;
     register: UseFormRegisterReturn;
     errorMessage: string | undefined;
@@ -58,22 +58,24 @@ export function RoyaltyFieldset(props: {
             <FormErrorMessage>{props.royaltyBps.errorMessage}</FormErrorMessage>
           </FormControl>
         </div>
-        <FormControl isRequired isInvalid={props.transferValidator.isInvalid}>
-          <FormLabel>Transfer Validator Address</FormLabel>
-          <SolidityInput
-            solidityType="address"
-            variant="filled"
-            {...props.transferValidator.register}
-          />
-          <FormErrorMessage>
-            {props.transferValidator.errorMessage}
-          </FormErrorMessage>
-          <FormHelperText className="!text-sm text-muted-foreground">
-            The contract address to enforce royalties according to the Creator
-            Token Standard implementation. Passing the zero address disables
-            this validation.
-          </FormHelperText>
-        </FormControl>
+        {props.transferValidator && (
+          <FormControl isRequired isInvalid={props.transferValidator.isInvalid}>
+            <FormLabel>Transfer Validator Address</FormLabel>
+            <SolidityInput
+              solidityType="address"
+              variant="filled"
+              {...props.transferValidator.register}
+            />
+            <FormErrorMessage>
+              {props.transferValidator.errorMessage}
+            </FormErrorMessage>
+            <FormHelperText className="!text-sm text-muted-foreground">
+              The contract address to enforce royalties according to the Creator
+              Token Standard implementation. Passing the zero address disables
+              this validation.
+            </FormHelperText>
+          </FormControl>
+        )}
       </div>
     </Fieldset>
   );
